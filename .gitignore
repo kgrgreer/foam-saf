@@ -1,0 +1,12 @@
+*#*
+*~
+.DS_Store
+build
+node_modules
+npm-debug.log
+pom.xml
+testindex
+
+# Intellij
+src/main
+src/test

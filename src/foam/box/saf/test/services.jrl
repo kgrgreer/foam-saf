@@ -1,0 +1,29 @@
+p({
+  class: "foam.core.boot.CSpec",
+  name: "testSAFBroadcastReceiverDAO",
+  authenticate: false,
+  pm: false,
+  service: {
+    class: "foam.box.saf.test.SAFBroadcastReceiverDAO"
+  }
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safBroadcastReceiverDAO",
+  "serve": true,
+  "serviceScript": `
+    d = x.get("testSAFBroadcastReceiverDAO");
+    d.setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFEntry.getOwnClassInfo()));
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.box.saf.SAFEntry.getOwnClassInfo())
+      .setNullify(true)
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .setPm(true)
+      .setDelegate(d)
+      .build())
+      .build();
+   `
+})

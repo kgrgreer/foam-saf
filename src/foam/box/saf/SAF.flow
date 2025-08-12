@@ -1,0 +1,63 @@
+<title>Store and Forward (SAF)</title>
+<p>Store And Forward (SAF) is a delayed-ime, one-way, data communication
+technique for replicating data changes on one instance to other instances.</p>
+See https://www.twingate.com/blog/glossary/store-and-forward and
+https://en.wikipedia.org/wiki/Store_and_forward
+<p>The data updates are persisted before being forwarded. Should the
+forwarding fail, it can be retried. Should the instance performing the
+forwarding fail, it can be restared, picking up where it left of with
+  the persisted data.</p>
+<p>FOAM's SAF solution is intended for small scale, low traffic, application clustering, where instances can safely fall out of sync with eath other for short time windows.</p>
+<p>It is recommended that instances of a SAF cluster are located behind a Load Balancer (LB) configured with stick sessions (which keep each users activities on the same instance).</p>
+<p>For single instance deployments, SAF can be used for zero-downtime upgrades (see below).</p>
+
+<h2>SAF in brief</h2>
+<p>SAF is setup via DAO decoration. EasyDAO installs a SAFBroadcastDAO
+  above the MDAO.  On <b>put</b>, for example, the SAFBroadcastDAO takes the
+  result of the MDAO delegate call, creates a SAFEntry, and passes it
+  off to the the SAF system.
+  The SAF system persists the entry in a journal and queues it for forwarding.
+  The forwarder polls the queue and attempts to send the entry to the
+  destination. It retries until successful.  An attempt is successful,
+  if the destination does not throw an exception.
+</p>
+
+<h1>Common Use Cases</h1>
+<h2>Zero Downtime Upgrades using SAF</h2>
+<p>Intended for low-cost single instance deployments. In this scenario
+  a second instance is brought up with the new version, traffic
+  cut over, and the original instance decommissioned.</p>
+<p>The zero-downtime is achieved through ordered manipulation of
+  SAFConfig <b>enabled</b> and Health <b>status</b> properties.</p>
+<p>A SAF instance will <b>store</b> data when it's Health status is <b>UP</b>
+  or <b>DRAIN</b>, and the destination's SAFConfig is enabled.</p>
+<p>A SAF instance will <b>forward</b> when the destination's
+Health status is <b>UP</b> or <b>MAINT</b>.</p>
+<p>This example uses instances S1 and S2, and Load Balancer LB.</p>
+<p>Initial configuration</p>
+<ul>
+<li>S1 is deployed with SAF configuration for both S1 and S2.</li>
+<li>LB configured with S1 and S2.</li>
+<li>S1 health is UP.</li>
+<li>LB directing traffic to S1.</li>
+<li>S2 health, on S1, is <b>DOWN</b> or <b>FAIL</b>. S2 SAFConfig, on S1, is <b>disabled</b>.
+  With S2 <b>disabled</b>, S1 will <b>not store</b> updates for S2.</li>
+</ul>
+<p>Upgrade process begins</p>
+<ol>
+  <li>On S1, <b>enable</b> S2 SAFConfig. This will cause S1 to <b>start storing</b> updates for S2.</li>
+<li>S1 journals copied to S2.</li>
+<li>S2 is deployed and started.  S2 will start with Health status <b>DOWN</b>.</li>
+<li>S2 post deploy steps (if any).</li>
+<li>On S2 Health status changed to <b>MAINT</b>. S1 will <b>start forwarding</b> to S2.</li>
+<li>Monitor until SAF is idle.</li>
+<li>On S2 change Health status to <b>UP</b>.</li>
+<li>On S1 change Health status to <b>DRAIN</b>.</li>
+<li>LB will now direct new traffic to S2.</li>
+<li>On S2, <b>disable</b> S1 SAFConfig.  This will cause S2 to <b>not store</b> updates for S1.</li>
+<li>Monitor S1 Sessions for idle, and then move Health status to <b>DOWN</b>.</li>
+<li>S1 can now be decommissioned.</li>
+</ol>
+<p>Upgrade complete</p>
+
+<h1>SAF Configuration</h1>

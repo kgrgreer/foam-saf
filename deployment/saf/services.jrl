@@ -1,0 +1,197 @@
+p({
+  class: "foam.core.boot.CSpec",
+  name: "SAFEntry",
+  description: "SAFEntry Factory",
+  authenticate: false,
+  pm: false,
+  service: {
+    class: "foam.box.saf.SAFEntryFactory"
+  }
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safManager",
+  "lazy": false,
+  "service": {
+    "class": "foam.box.saf.SAFManager"
+  }
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"internalSAFDAO",
+  "description": "A read-only database of SAF.",
+  "serve":true,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setAuthorize(false)
+      .setPm(true)
+      .setPipelinePm(false)
+      .setReadOnly(true)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setJournalName("storeAndForwards")
+      .setCluster(false)
+      .setSaf(false)
+      .setOf(foam.box.saf.SAF.getOwnClassInfo())
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.box.saf.SAF"
+    }
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safDAO",
+  "serve":false,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setPm(true)
+      .setNullify(true)
+      .setCluster(false)
+      .setSaf(false)
+      .setOf(foam.box.saf.SAF.getOwnClassInfo())
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.box.saf.SAF"
+    }
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safMonitorDAO",
+  "serve":true,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.box.saf.SAFMonitor.getOwnClassInfo())
+      .setNullify(true)
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .setPm(true)
+      .setDelegate(new foam.box.saf.SAFMonitorDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFMonitor.getOwnClassInfo()))
+      .build())
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.box.saf.SAFMonitor"
+    }
+  """
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safBroadcastReceiverDAO",
+  "serve": true,
+  "serviceScript": `
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.box.saf.SAFEntry.getOwnClassInfo())
+      .setNullify(true)
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .setPm(true)
+      .setDelegate(new foam.box.saf.SAFBroadcastReceiverDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFEntry.getOwnClassInfo()))
+      .build())
+      .build();
+   `
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safConfigDAO",
+  "serve": true,
+  "lazy": false,
+  "serviceScript": `
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.box.saf.SAFConfig.getOwnClassInfo())
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setJournalName("safconfigs")
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .build();
+   `,
+  "client": `
+    {
+      "of":"foam.box.saf.SAFConfig"
+    }
+  `
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safConfigSupport",
+  "lazy":false,
+  "service": {
+    "class": "foam.box.saf.SAFConfigSupport"
+  }
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"demoHttpSinkUsingAtime",
+  "description": "A demo http sink for SAFSink",
+  "serviceScript":
+  """
+    return new foam.dao.HTTPSink(
+      "http://localhost:7777/",
+      null,
+      foam.core.http.Format.JSON,
+      new foam.lib.AndPropertyPredicate(
+        x,
+        new foam.lib.PropertyPredicate[] {
+          new foam.lib.ExternalPropertyPredicate(),
+          new foam.lib.NetworkPropertyPredicate(),
+          new foam.lib.PermissionedPropertyPredicate()
+        }
+      ),
+      false
+    );
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"localInternalSessionDAO",
+  "serviceScript":"""
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.session.Session.getOwnClassInfo())
+      .setGuid(true)
+      .setJournalName("sessionsinternal")
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setAuthorize(false)
+      .setCluster(false)
+      .setSaf(false)
+      .setDecorator(new foam.dao.ValidatingDAO(x, new foam.dao.NullDAO(x, foam.core.session.Session.getOwnClassInfo())))
+      .build();
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"internalSessionDAO",
+  "serviceScript":"""
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.session.Session.getOwnClassInfo())
+      .setInnerDAO(x.get("localInternalSessionDAO"))
+      .setEnableInterfaceDecorators(false)
+      .build();
+  """,
+  "client": "{\"of\":\"foam.core.session.Session\"}"
+})

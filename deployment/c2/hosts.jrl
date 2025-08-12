@@ -1,0 +1,10 @@
+p({
+  "class":"foam.net.Host",
+  "id":"saf1",
+  "address":"saf1"
+})
+p({
+  "class":"foam.net.Host",
+  "id":"saf2",
+  "address":"saf2"
+})
