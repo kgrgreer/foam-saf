@@ -1,41 +1,28 @@
-# c2 - 2 Mediator, 2 Node Medusa Cluster
+# c2 - 2 SAF Cluster
 
-Configuration and build scripts to test/run a Medusa cluster locally.
+Configuration and build scripts to test/run a SAF cluster locally.
 
-These build scripts are designed to run all mediators and nodes in the same memory space.
+These build scripts are designed to run all SAF instances in the same memory space.
 
 ## Requirements
-
-* need at least 16Gbytes free - 4Gb x 4
+* need at least 8Gbytes free - 4Gb x 2
 
 ## Machine configuration
-<code>/etc/hosts:
-127.0.0.1       mediator1
-127.0.0.1       mediator2
-127.0.0.1       node1
-127.0.0.1       node2
-</code>
+/etc/hosts:
+127.0.0.1       saf1
+127.0.0.1       saf2
 
 ## Build scripts
-### nodes
-1. `foam-medusa/deployment/c2-mn/build-1.sh [-j]`
-1. `foam-medusa/deployment/c2-mn/build-2.sh [-j]`
-
-### mediators
-1. `foam-medusa/deployment/c2-mm/build-1.sh`
-1. `foam-medusa/deployment/c2-mm/build-2.sh`
+1. `deployment/c2/run1.sh -c [-j]`
+1. `deployment/c2/run2.sh [-j]`
 
 ## Website
 ### User / Themed website
-
-* `https://mediator1:8100`
-* `https://mediator2:8110`
+* `https://saf1:8300`
+* `https://saf2:8310`
 
 ### Admin access
+* `https://localhost:8300`
+* `https://localhost:8310`
 
-* `https://localhost:8100`
-* `https://localhost:8110`
-
-## Notes
-* To drop node ledger - build the node with the -j
-* All builds execute cleanAll - future build support may eliminate this requirement. 
+* To drop journals and pending saf data - build with -j
