@@ -10,7 +10,8 @@ foam.CLASS({
   extends: 'foam.dao.ProxyDAO',
 
   javaImports: [
-    'foam.box.saf.SAFEntry'
+    'foam.box.saf.SAFEntry',
+    'foam.core.logger.Loggers'
   ],
 
   properties: [
@@ -29,6 +30,7 @@ foam.CLASS({
     {
       name: 'put_',
       javaCode: `
+      Loggers.logger(x, this).info("put_", obj);
       setCount(getCount() +1);
       setLastSAFEntry((SAFEntry) obj);
       return obj;

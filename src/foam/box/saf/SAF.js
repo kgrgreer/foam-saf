@@ -176,6 +176,7 @@ If -1, no using timeWindow`,
       documentation: 'Add the entry into process queue.',
       javaCode: `
         /* Assign initial time and enqueue. */
+        Loggers.logger(getX(), this).debug("forward,enqueue", e);
         e.setScheduledTime(System.currentTimeMillis());
         ((SAFManager) getManager()).enqueue(e);
       `
@@ -219,6 +220,7 @@ If -1, no using timeWindow`,
           entry = (SAFEntry) journal.put(getX(), "", (DAO) getNullDao(), entry);
 
           synchronized ( onHoldListLock_ ) {
+            Loggers.logger(x, this).debug("storeAndForward,onHoldList", onHoldList_.size());
             if ( onHoldList_.isEmpty() ) {
               onHoldList_.add(entry);
               cleanEntryInfos();

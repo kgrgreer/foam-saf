@@ -12,6 +12,8 @@ foam.POM({
   ],
 
   files: [
-    { name: "../../src/foam/box/saf/EasyDAORefinement",          flags: "js|java" }
+    { name: "../../src/foam/box/saf/CronRefines",                flags: "js|java" },
+    { name: "../../src/foam/box/saf/EasyDAORefines",             flags: "js|java" },
+    { name: "../../src/foam/box/saf/HealthRefines",              flags: "js|java" }
   ]
 });

@@ -52,11 +52,9 @@ p({
   "serviceScript":
   """
     return new foam.dao.EasyDAO.Builder(x)
-      .setPm(true)
-      .setNullify(true)
+      .setOf(foam.box.saf.SAF.getOwnClassInfo())
       .setCluster(false)
       .setSaf(false)
-      .setOf(foam.box.saf.SAF.getOwnClassInfo())
       .build();
   """,
   "client":
@@ -194,4 +192,18 @@ p({
       .build();
   """,
   "client": "{\"of\":\"foam.core.session.Session\"}"
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "healthStatusWatcher",
+  "lazy": false,
+  "serviceClass": "foam.box.saf.HealthStatusWatcher"
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "shutdownWatcher",
+  "lazy": false,
+  "serviceClass": "foam.core.app.ShutdownWatcher"
 })

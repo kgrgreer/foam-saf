@@ -6,7 +6,7 @@
 
 foam.CLASS({
   package: 'foam.box.saf',
-  name: 'EasyDAORefinement',
+  name: 'EasyDAORefines',
   refines: 'foam.dao.EasyDAO',
 
   methods: [

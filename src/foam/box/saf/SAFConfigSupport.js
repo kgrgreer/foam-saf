@@ -30,6 +30,14 @@ foam.CLASS({
     'foam.lang.X',
   ],
 
+  properties: [
+    {
+      name: 'threadPoolName',
+      class: 'String',
+      value: 'boxThreadPool'
+    }
+  ],
+
   methods: [
     {
       name: 'getLocalConfig',

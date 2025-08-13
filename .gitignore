@@ -1,12 +1,41 @@
+### FOAM build ###
 *#*
 *~
-.DS_Store
 build
 node_modules
 npm-debug.log
 pom.xml
 testindex
 
-# Intellij
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
 src/main
 src/test
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

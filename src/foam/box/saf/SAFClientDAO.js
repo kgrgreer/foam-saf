@@ -47,12 +47,7 @@ foam.CLASS({
       class: 'Proxy',
       of: 'foam.dao.DAO',
       name: 'delegate',
-      transient: true,
-      javaFactory: `
-      SAFConfigSupport support = (SAFConfigSupport) getX().get("safConfigSupport");
-      DAO dao = support.getBroadcastClientDAO(getX(), getServiceName(), getSenderConfig(), getReceiverConfig());
-      return dao;
-      `
+      transient: true
     }
   ],
 
