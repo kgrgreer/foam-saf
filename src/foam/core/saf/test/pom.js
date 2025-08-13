@@ -9,7 +9,7 @@ foam.POM({
 
   files: [
     { name: "SAFBroadcastReceiverTestDAO",           flags: "js|java"},
-    { name: "SAFTest",                               flags: "js|java"},
+    { name: "SAFClusterTest",                        flags: "js|java"},
     { name: "SAFTestObject",                         flags: "js|java"}
   ]
 });

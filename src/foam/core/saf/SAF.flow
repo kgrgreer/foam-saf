@@ -60,4 +60,10 @@ Health status is <b>UP</b> or <b>MAINT</b>.</p>
 </ol>
 <p>Upgrade complete</p>
 
+<h3>SAF Health Status Manipulation</h3>
+<p>The Health status of a SAF instance can be manipulated from the file system, allow deployment scripts to orchistrate the two instances during a upgrade.
+  When an instance starts, the HealthStatusWather will output it's watch directory. Touching the appropriate file name in this directory affect the Health status.</p>
+<p>For example, with watch directory /tmp, touching /tmp/hostname/appname/UP would cause the instance to change to Health status 'UP'</p>
+
 <h1>SAF Configuration</h1>
+<b>Incomplete</b>

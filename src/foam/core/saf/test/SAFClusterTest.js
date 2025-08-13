@@ -6,10 +6,13 @@
 
 foam.CLASS({
   package: 'foam.core.saf.test',
-  name: 'SAFTest',
+  name: 'SAFClusterTest',
   extends: 'foam.core.test.Test',
 
-  documentation: `This test should be run indpendently of other tests
+  documentation: `NOTE: This test should be run indpendently of other tests
+This test mimics a two instance cluster. Manipulates SAFConfig and
+HealthStatus to test that DAO operations are stored and eventually
+delivered to the 'other' instance. 
 `,
 
   javaImports: [

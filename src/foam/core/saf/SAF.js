@@ -20,6 +20,7 @@ foam.CLASS({
     'foam.core.logger.Logger',
     'foam.core.logger.Loggers',
     'foam.core.logger.PrefixLogger',
+    'foam.core.om.OMLogger',
     'foam.dao.*',
     'foam.dao.ReadOnlyF3FileJournal',
     'foam.lang.X',
@@ -52,7 +53,6 @@ foam.CLASS({
     'filePrefix',
     'fileName',
     'fileCapacity',
-    'inFlightLimit',
     'index'
   ],
 
@@ -107,11 +107,6 @@ If -1, no using timeWindow`,
       javaGetter: `
         return isReady_.get();
       `
-    },
-    {
-      class: 'Int',
-      name: 'inFlightLimit',
-      value: 1024
     },
     {
       class: 'Long',
@@ -230,6 +225,7 @@ If -1, no using timeWindow`,
             }
           }
         }
+        ((OMLogger) x.get("OMLogger")).log("SAF:store");
         // return fobject.fclone();
         return fobject;
       `
@@ -297,6 +293,7 @@ If -1, no using timeWindow`,
       name: 'submit',
       args: 'Context x, SAFEntry entry',
       javaCode: `
+        ((OMLogger) x.get("OMLogger")).log("SAF:forward");
         Object delegate = getDelegateObject();
         if ( delegate instanceof Box ) ((Box) delegate).send((Envelope) entry.getObject());
         else if ( delegate instanceof DAO ) ((DAO) delegate).put_(x, entry.getObject());

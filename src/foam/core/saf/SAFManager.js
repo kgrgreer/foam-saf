@@ -48,6 +48,12 @@ foam.CLASS({
 
   properties: [
     {
+      documentation: 'Enable to generate debug log calls.',
+      name: 'verbose',
+      class: 'Boolean',
+      value: false
+    },
+    {
       class: 'Object',
       javaType: 'PriorityQueue',
       name: 'prorityQueue',
@@ -116,16 +122,16 @@ foam.CLASS({
           @Override
           public void execute(X x) {
             while ( true ) {
-              Loggers.logger(x).info("SAFManager,forwarder,queue",queue.size());
+              if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,queue",queue.size());
               if ( queue.size() > 0 ) {
-                Loggers.logger(x).info("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
+                if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
                 if ( queue.peek().getScheduledTime() <= System.currentTimeMillis() ) {
                   SAFEntry e = queue.peek();
                   final SAF saf = (SAF) getSafs().get(e.getSaf());
                   if ( saf == null ) {
                     // SAF removed, discard it's data.
                     try {
-                       Loggers.logger(x).info("SAFManager,forwarder,discard", saf.getId(), e.getObject());
+                       if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,discard", saf.getId(), e.getObject());
                       queue.remove(e);
                       SAF old = e.findSaf(x);
                       old.discardForward(e);
@@ -137,14 +143,14 @@ foam.CLASS({
                   }
 
                   Health health = healthSupport.getHealth(x, saf.getId());
-                  Loggers.logger(x).info("SAFManager,forwarder,health", saf.getId(), health.toSummary());
+                  if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,health", saf.getId(), health.toSummary());
                   if ( health != null &&
                        ( health.getStatus() == HealthStatus.UP ||
                          health.getStatus() == HealthStatus.MAINT ) ) {
                     assemblyLine.enqueue(new AbstractAssembly() {
                       public void executeJob() {
                         try {
-                          Loggers.logger(x).info("SAFManager,forwarder,submit", saf.getId(), e.getObject());
+                          if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,submit", saf.getId(), e.getObject());
                           queue.remove(e);
                           saf.submit(x, e);
                           try {
@@ -161,7 +167,7 @@ foam.CLASS({
                           Loggers.logger(x).warning("SAFManager,forwarder,setReady,false", saf.getId(), t.getMessage());
                           //Loggers.logger(x).error("SAFManager,forwarder,setReady,false", saf.getId(), t);
                           try {
-                            Loggers.logger(x).info("SAFManager,forwarder,failFoward", saf.getId());
+                            if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,failFoward", saf.getId());
                             saf.failForward(e, t);
                           } catch ( Throwable et ) {
                             Loggers.logger(x).error("SAFManager,forwarder,failFoward", saf.getId(), et);
@@ -177,7 +183,7 @@ foam.CLASS({
                   if ( waitTime > 0 ) {
                     lock_.lock();
                     try {
-                      Loggers.logger(x).info("SAFManager,forwarder,await",waitTime);
+                      if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await",waitTime);
                       notAvailable_.await(waitTime, TimeUnit.MILLISECONDS);
                     } catch ( InterruptedException e ) {
                       Loggers.logger(x).info("SAFManager,forwarder,interrupted",waitTime);
@@ -188,7 +194,7 @@ foam.CLASS({
                 } else {
                   lock_.lock();
                   try {
-                    Loggers.logger(x).info("SAFManager,forwarder,await,2000");
+                    if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await,2000");
                     notAvailable_.await(2000, TimeUnit.MILLISECONDS);
                   } catch ( InterruptedException e ) {
                     Loggers.logger(x).info("SAFManager,forwarder,interrupted");
@@ -200,8 +206,8 @@ foam.CLASS({
                 if ( getSafs().size() == 0 ) {
                   lock_.lock();
                   try {
-                    // disable until SAFs
-                    Loggers.logger(x).info("SAFManager,forwarder,await");
+                    // disable until SAFs available
+                    if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await");
                     notAvailable_.await();
                   } catch ( InterruptedException e ) {
                     Loggers.logger(x).info("SAFManager,forwarder,interrupted");
@@ -211,7 +217,7 @@ foam.CLASS({
                 } else {
                   lock_.lock();
                   try {
-                    Loggers.logger(x).info("SAFManager,forwarder,await,2000");
+                    if ( getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await,2000");
                     notAvailable_.await(2000, TimeUnit.MILLISECONDS);
                   } catch ( InterruptedException e ) {
                     Loggers.logger(x).info("SAFManager,forwarder,interrupted");
@@ -221,7 +227,7 @@ foam.CLASS({
                 }
               }
             }
-          }
+         } 
         }, "SAFManager");
       `
     },

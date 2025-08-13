@@ -25,8 +25,12 @@ foam.CLASS({
     {
       name: 'acceptRequest',
       javaCode: `
-      HealthStatus status = HealthStatus.valueOf(request);
-      return status != null;
+      try {
+        HealthStatus status = HealthStatus.valueOf(request);
+        return true;
+      } catch (IllegalArgumentException e) {
+        return false;
+      }
       `
     },
     {

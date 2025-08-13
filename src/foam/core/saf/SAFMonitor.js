@@ -16,23 +16,7 @@ foam.CLASS({
   tableColumns: [
     'id',
     'ready',
-    'inFlightCount',
-    'inFlightLimit'
-  ],
-
-  properties: [
-    {
-      class: 'Int',
-      name: 'inFlightCount'
-    },
-    {
-      class: 'Boolean',
-      name: 'ready'
-    },
-    {
-      class: 'Long',
-      name: 'initialIndex'
-    }
+    'index'
   ],
 
   javaCode: `
@@ -40,9 +24,7 @@ foam.CLASS({
       this.setX(saf.getX());
       this.setId(saf.getId());
       this.setReady(saf.getReady());
-      this.setInFlightLimit(saf.getInFlightLimit());
-      this.setInFlightCount(saf.onHoldList_.size());
-      this.setInitialIndex(saf.maxFileIndex_*saf.getFileCapacity());
+      this.setIndex(saf.getIndex());
     }
   `
 })

@@ -12,6 +12,6 @@ foam.POM({
   ],
 
   files: [
-    { name: "../../src/foam/core/saf/EasyDAOSAFAllRefinement",    flags: "js|java" }
+    { name: "../../src/foam/core/saf/EasyDAOSAFAllRefines",      flags: "js|java" }
   ]
 });
