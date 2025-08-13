@@ -13,15 +13,13 @@ p({
   "name": "safBroadcastReceiverDAO",
   "serve": true,
   "serviceScript": `
-    d = x.get("safBroadcastReceiverTestDAO");
-    d.setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFEntry.getOwnClassInfo()));
     return new foam.dao.EasyDAO.Builder(x)
       .setOf(foam.core.saf.SAFEntry.getOwnClassInfo())
       .setNullify(true)
       .setCluster(false)
       .setSaf(false)
       .setRuler(false)
-      .setDelegate(d)
+      .setDelegate(x.get("safBroadcastReceiverTestDAO"))
       .build();
    `
 })

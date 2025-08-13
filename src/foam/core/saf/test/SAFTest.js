@@ -178,7 +178,7 @@ foam.CLASS({
           // nop
         }
         test ( saf.getIndex() == 2, "SAF index 2: "+saf.getIndex());
-        test ( receiverDAO.getCount() == 1, "Entry forwarded: "+receiverDAO.getCount());
+        test ( receiverDAO.getCount() == 2, "Entry forwarded: "+receiverDAO.getCount());
       } finally {
         teardown(x);
       }

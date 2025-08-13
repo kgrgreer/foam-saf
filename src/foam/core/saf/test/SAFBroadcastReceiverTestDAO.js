@@ -7,7 +7,7 @@
 foam.CLASS({
   package: 'foam.core.saf.test',
   name: 'SAFBroadcastReceiverTestDAO',
-  extends: 'foam.dao.ProxyDAO',
+  extends: 'foam.dao.NullDAO',
 
   javaImports: [
     'foam.core.saf.SAFEntry',
@@ -15,6 +15,11 @@ foam.CLASS({
   ],
 
   properties: [
+    {
+      name: 'of',
+      javaFactory: 'return foam.core.saf.SAFEntry.getOwnClassInfo();',
+      visibility: 'HIDDEN'
+    },
     {
       name: 'count',
       class: 'Int'
