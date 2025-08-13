@@ -1,5 +1,5 @@
 p({
-  "class":"foam.box.saf.SAFConfig",
+  "class":"foam.core.saf.SAFConfig",
   "id":"safT1",
   "name":"safT1",
   "enabled":true,
@@ -10,7 +10,7 @@ p({
 })
 
 p({
-  "class":"foam.box.saf.SAFConfig",
+  "class":"foam.core.saf.SAFConfig",
   "id":"safT2",
   "name":"safT2",
   "enabled":false,

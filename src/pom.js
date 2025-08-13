@@ -7,6 +7,6 @@
 foam.POM({
   name: "src",
   projects: [
-    { name: "foam/box/saf/pom" }
+    { name: "foam/core/saf/pom" }
   ]
 });

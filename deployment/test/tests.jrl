@@ -1,4 +1,4 @@
 p({
-  class: "foam.box.saf.test.SAFTest",
+  class: "foam.core.saf.test.SAFTest",
   id: "SAFTest"
 })

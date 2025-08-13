@@ -5,7 +5,7 @@ p({
   authenticate: false,
   pm: false,
   service: {
-    class: "foam.box.saf.SAFEntryFactory"
+    class: "foam.core.saf.SAFEntryFactory"
   }
 })
 
@@ -14,7 +14,7 @@ p({
   "name": "safManager",
   "lazy": false,
   "service": {
-    "class": "foam.box.saf.SAFManager"
+    "class": "foam.core.saf.SAFManager"
   }
 })
 
@@ -34,13 +34,13 @@ p({
       .setJournalName("storeAndForwards")
       .setCluster(false)
       .setSaf(false)
-      .setOf(foam.box.saf.SAF.getOwnClassInfo())
+      .setOf(foam.core.saf.SAF.getOwnClassInfo())
       .build();
   """,
   "client":
   """
     {
-      "of":"foam.box.saf.SAF"
+      "of":"foam.core.saf.SAF"
     }
   """
 })
@@ -52,7 +52,7 @@ p({
   "serviceScript":
   """
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.SAF.getOwnClassInfo())
+      .setOf(foam.core.saf.SAF.getOwnClassInfo())
       .setCluster(false)
       .setSaf(false)
       .build();
@@ -60,7 +60,7 @@ p({
   "client":
   """
     {
-      "of":"foam.box.saf.SAF"
+      "of":"foam.core.saf.SAF"
     }
   """
 })
@@ -72,21 +72,21 @@ p({
   "serviceScript":
   """
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.SAFMonitor.getOwnClassInfo())
+      .setOf(foam.core.saf.SAFMonitor.getOwnClassInfo())
       .setNullify(true)
       .setCluster(false)
       .setSaf(false)
       .setRuler(false)
       .setPm(true)
-      .setDelegate(new foam.box.saf.SAFMonitorDAO.Builder(x)
-        .setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFMonitor.getOwnClassInfo()))
+      .setDelegate(new foam.core.saf.SAFMonitorDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFMonitor.getOwnClassInfo()))
       .build())
       .build();
   """,
   "client":
   """
     {
-      "of":"foam.box.saf.SAFMonitor"
+      "of":"foam.core.saf.SAFMonitor"
     }
   """
 })
@@ -97,14 +97,14 @@ p({
   "serve": true,
   "serviceScript": `
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.SAFEntry.getOwnClassInfo())
+      .setOf(foam.core.saf.SAFEntry.getOwnClassInfo())
       .setNullify(true)
       .setCluster(false)
       .setSaf(false)
       .setRuler(false)
       .setPm(true)
-      .setDelegate(new foam.box.saf.SAFBroadcastReceiverDAO.Builder(x)
-        .setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFEntry.getOwnClassInfo()))
+      .setDelegate(new foam.core.saf.SAFBroadcastReceiverDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFEntry.getOwnClassInfo()))
       .build())
       .build();
    `
@@ -117,7 +117,7 @@ p({
   "lazy": false,
   "serviceScript": `
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.SAFConfig.getOwnClassInfo())
+      .setOf(foam.core.saf.SAFConfig.getOwnClassInfo())
       .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
       .setJournalName("safconfigs")
       .setCluster(false)
@@ -127,7 +127,7 @@ p({
    `,
   "client": `
     {
-      "of":"foam.box.saf.SAFConfig"
+      "of":"foam.core.saf.SAFConfig"
     }
   `
 })
@@ -137,7 +137,7 @@ p({
   "name":"safConfigSupport",
   "lazy":false,
   "service": {
-    "class": "foam.box.saf.SAFConfigSupport"
+    "class": "foam.core.saf.SAFConfigSupport"
   }
 })
 
@@ -198,7 +198,7 @@ p({
   "class": "foam.core.boot.CSpec",
   "name": "healthStatusWatcher",
   "lazy": false,
-  "serviceClass": "foam.box.saf.HealthStatusWatcher"
+  "serviceClass": "foam.core.saf.HealthStatusWatcher"
 })
 
 p({

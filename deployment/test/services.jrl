@@ -4,7 +4,7 @@ p({
   authenticate: false,
   pm: false,
   service: {
-    class: "foam.box.saf.test.SAFBroadcastReceiverTestDAO"
+    class: "foam.core.saf.test.SAFBroadcastReceiverTestDAO"
   }
 })
 
@@ -14,9 +14,9 @@ p({
   "serve": true,
   "serviceScript": `
     d = x.get("safBroadcastReceiverTestDAO");
-    d.setDelegate(new foam.dao.NullDAO(x, foam.box.saf.SAFEntry.getOwnClassInfo()));
+    d.setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFEntry.getOwnClassInfo()));
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.SAFEntry.getOwnClassInfo())
+      .setOf(foam.core.saf.SAFEntry.getOwnClassInfo())
       .setNullify(true)
       .setCluster(false)
       .setSaf(false)
@@ -32,7 +32,7 @@ p({
   "serve": true,
   "serviceScript": `
     return new foam.dao.EasyDAO.Builder(x)
-      .setOf(foam.box.saf.test.SAFTestObject.getOwnClassInfo())
+      .setOf(foam.core.saf.test.SAFTestObject.getOwnClassInfo())
       .setFuid(true)
       .setCluster(false)
       .setSaf(true)
