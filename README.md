@@ -31,3 +31,7 @@ run with `deployment/test/test.sh`
 
 ## Developer cluster
 See deployment/c2/README.md
+
+
+## Future work
+Presently when a forward destination goes offline, updates are queued in memory. This obvious does not scale.  A solution to this problem is create a forwarder per destination. With this when the destination is not reachable the forwarder can be stopped and the queue released. When the destination is again available, then forwarder can start again as it does at startup and forward from the 'store' file. 
