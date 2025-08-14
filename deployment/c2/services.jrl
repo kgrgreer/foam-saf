@@ -1,0 +1,6 @@
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safConfigWatcher",
+  "lazy": false,
+  "serviceClass": "foam.core.saf.SAFConfigWatcher"
+})

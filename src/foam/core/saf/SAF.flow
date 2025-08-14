@@ -89,5 +89,11 @@ Health status is <b>UP</b> or <b>MAINT</b>.</p>
   When an instance starts, the HealthStatusWather will output it's watch directory. Touching the appropriate file name in this directory affect the Health status.</p>
 <p>For example, with watch directory /tmp, touching /tmp/hostname/appname/UP would cause the instance to change to Health status 'UP'</p>
 
-<h1>SAF Configuration</h1>
+<h1>Development and Testing</h1>
 <b>Incomplete</b>
+
+<h1>Two instance cluster for developing</h1>
+<p>see deployment/c2/README.md</p>
+
+<h1>Testing</h1>
+<p>see foam/core/saf/test/SAFClusterTest.  A test which mimics a two instance cluster. Manipulates SAFConfig and HealthStatus to test that DAO operations are stored and eventually delivered to the 'other' instance.</p>

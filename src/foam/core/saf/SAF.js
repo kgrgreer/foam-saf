@@ -60,23 +60,31 @@ foam.CLASS({
   properties: [
     {
       class: 'String',
-      name: 'id'
+      name: 'id',
+      visibility: 'RO'
     },
     {
+      // set by SAFManager
       class: 'String',
       name: 'filePrefix',
-      value: '../saf/'
+      value: '../saf/',
+      visibility: 'RO'
     },
     {
+      // set by SAFManager
       class: 'String',
-      name: 'fileName'
+      name: 'fileName',
+      visibility: 'RO'
     },
     {
+      // set by SAFManager
       class: 'Int',
       name: 'fileCapacity',
-      value: 1024
+      value: 1024,
+      visibility: 'RO'
     },
     {
+      // set by SAFManager
       name: 'retryStrategy',
       class: 'FObjectProperty',
       of: 'foam.util.retry.RetryStrategy',
@@ -84,15 +92,18 @@ foam.CLASS({
         return (new RetryForeverStrategy.Builder(null))
           .setRetryDelay(4000)
           .build();
-      `
+      `,
+      visibility: 'RO'
     },
     {
+      // set by SAFManager
       class: 'Int',
       name: 'timeWindow',
       units: 's',
       documentation: `When app starts, replay entries in timeWindow ago from now(the time that app starts).
 If -1, no using timeWindow`,
-      value: -1
+      value: -1,
+      visibility: 'RO'
     },
     {
       class: 'Boolean',

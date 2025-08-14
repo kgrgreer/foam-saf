@@ -48,6 +48,35 @@ foam.CLASS({
 
   properties: [
     {
+      class: 'String',
+      name: 'filePrefix',
+      value: '../saf/'
+    },
+    {
+      class: 'Int',
+      name: 'fileCapacity',
+      value: 1024
+    },
+    {
+      // mismatch with medusa where this is an int.
+      name: 'retryStrategy',
+      class: 'FObjectProperty',
+      of: 'foam.util.retry.RetryStrategy',
+      javaFactory: `
+        return (new RetryForeverStrategy.Builder(null))
+          .setRetryDelay(4000)
+          .build();
+      `
+    },
+    {
+      class: 'Int',
+      name: 'timeWindow',
+      units: 's',
+      documentation: `When app starts, replay entries in timeWindow ago from now(the time that app starts).
+If -1, no using timeWindow`,
+      value: -1
+    },
+    {
       class: 'Object',
       javaType: 'PriorityQueue',
       name: 'prorityQueue',
@@ -264,6 +293,10 @@ foam.CLASS({
             if ( getSafs().get(id) == null ) {
               saf = createClient(x, id);
               saf.setManager(this);
+              saf.setFilePrefix(getFilePrefix());
+              saf.setFileCapacity(getFileCapacity());
+              saf.setRetryStrategy(getRetryStrategy());
+              saf.setTimeWindow(getTimeWindow());
               saf.setReady(true);
               saf.initialize(x);
               getSafs().put(id, saf);

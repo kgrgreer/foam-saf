@@ -1,11 +1,4 @@
 <title>SAF Developer Notes</SAF>
-<h1>Two instance cluster for developing</h1>
-<p>see deployment/c2/README.md</p>
-
-<h1>Testing</h1>
-<p>see foam/core/saf/test/SAFClusterTest.  A test which mimics a two instance cluster. Manipulates SAFConfig and HealthStatus to test that DAO operations are stored and eventually delivered to the 'other' instance.</p>
-
-
 <b>Incomplete / Outdated </b>
 <h1>Custom SAF processing</h1>
 SAFEntry: use to store request/data/object that will be processed by SAF.

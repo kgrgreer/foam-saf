@@ -9,7 +9,7 @@ foam.CLASS({
   name: 'SAFClientDAO',
   extends: 'foam.core.saf.SAFDAO',
 
-    javaImports: [
+  javaImports: [
     'foam.core.pm.PM',
     'foam.dao.DAO',
     'foam.lang.FObject'

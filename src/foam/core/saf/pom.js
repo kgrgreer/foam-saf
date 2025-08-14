@@ -22,6 +22,7 @@ foam.POM({
     { name: "SAFBOX",                               flags: "js|java" },
     { name: "SAFClientDAO",                         flags: "js|java" },
     { name: "SAFConfig",                            flags: "js|java" },
+    { name: "SAFConfigWatcher",                     flags: "js|java" },
     { name: "SAFDAO",                               flags: "js|java" },
     { name: "SAFEntry",                             flags: "js|java" },
     { name: "SAFEntryFactory",                      flags: "js|java" },
