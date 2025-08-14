@@ -7,6 +7,21 @@ It is recommended that instances of a SAF cluster are located behind a Load Bala
 
 For single instance deployments, SAF can be used for zero-downtime upgrades (see #flow-doc/SAF).
 
+## Use - Inclusion in an application
+SAF can be included in an application in two scenarios:
+1. opt-in
+    `-J../../foam-saf/deployment/saf`
+    With opt-in, SAF defaults to disabled for all CSpecs using EasyDAO. To enable use: `setSaf(true)`.
+1. opt-out
+    `-J../../foam-saf/deployment/saf-all`
+    With opt-out, SAF defaults to enabled for all CSpecs using EasyDAO. To disable use: `setSaf(false)`.
+
+### Additional Configuration - incomplete
+see deployment/c2 for examples
+* safconfigs.jrl - saf instance configuration
+* hosts.jrl - id to hostname mapping
+* sessionsinternal.jrl - session ids for inter-saf ssl connections
+
 ## Additional documentation
 * #flow-doc/SAF
 

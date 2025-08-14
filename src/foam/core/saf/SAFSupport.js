@@ -6,7 +6,9 @@
 
 foam.CLASS({
   package: 'foam.core.saf',
-  name: 'SAFConfigSupport',
+  name: 'SAFSupport',
+
+  documentation: 'Miscellaneous helper methods and properties',
 
   axioms: [
     foam.pattern.Singleton.create()
@@ -31,6 +33,11 @@ foam.CLASS({
   ],
 
   properties: [
+    {
+      name: 'verbose',
+      class: 'Boolean',
+      value: false
+    },
     {
       name: 'threadPoolName',
       class: 'String',

@@ -16,7 +16,8 @@ foam.CLASS({
   tableColumns: [
     'id',
     'ready',
-    'index'
+    'index',
+    'onHoldListSize'
   ],
 
   javaCode: `
@@ -25,6 +26,7 @@ foam.CLASS({
       this.setId(saf.getId());
       this.setReady(saf.getReady());
       this.setIndex(saf.getIndex());
+      this.setOnHoldListSize(saf.getOnHoldListSize());
     }
   `
 })

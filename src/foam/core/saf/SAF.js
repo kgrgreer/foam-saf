@@ -53,7 +53,8 @@ foam.CLASS({
     'filePrefix',
     'fileName',
     'fileCapacity',
-    'index'
+    'index',
+    'onHoldListSize'
   ],
 
   properties: [
@@ -116,6 +117,13 @@ If -1, no using timeWindow`,
       visibility: 'RO'
     },
     {
+      class: 'Long',
+      name: 'onHoldListSize',
+      javaGetter: 'return onHoldList_.size();',
+      storageTransient: true,
+      visibility: 'RO'
+    },
+    {
       class: 'Object',
       name: 'delegateObject',
       visibility: 'HIDDEN',
@@ -171,7 +179,7 @@ If -1, no using timeWindow`,
       documentation: 'Add the entry into process queue.',
       javaCode: `
         /* Assign initial time and enqueue. */
-        Loggers.logger(getX(), this).debug("forward,enqueue", e);
+        if ( ((SAFSupport)getX().get("safSupport")).getVerbose() ) Loggers.logger(getX(), this).debug("forward,enqueue", e);
         e.setScheduledTime(System.currentTimeMillis());
         ((SAFManager) getManager()).enqueue(e);
       `
@@ -189,7 +197,7 @@ If -1, no using timeWindow`,
         if ( health == null ||
              ( health.getStatus() != HealthStatus.UP &&
                health.getStatus() != HealthStatus.DRAIN ) ) {
-          Loggers.logger(x, this).debug("storeAndForward discard, local not UP or DRAIN");
+          if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) Loggers.logger(x, this).debug("storeAndForward discard,local not UP or DRAIN");
           return fobject;
         }
         if ( ! getReady() ) {
@@ -215,7 +223,7 @@ If -1, no using timeWindow`,
           entry = (SAFEntry) journal.put(getX(), "", (DAO) getNullDao(), entry);
 
           synchronized ( onHoldListLock_ ) {
-            Loggers.logger(x, this).debug("storeAndForward,onHoldList", onHoldList_.size());
+            if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) Loggers.logger(x, this).debug("storeAndForward,onHoldList", onHoldList_.size());
             if ( onHoldList_.isEmpty() ) {
               onHoldList_.add(entry);
               cleanEntryInfos();

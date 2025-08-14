@@ -13,7 +13,6 @@ foam.POM({
     { name: "CronRefines",                          flags: "js|java" },
     { name: "DUGSFRuleAction",                      flags: "js|java" },
     { name: "DUGSFRule",                            flags: "js|java" },
-    // { name: "EasyDAORefinement",                    flags: "js|java" },
     { name: "HealthRefines",                        flags: "js|java" },
     { name: "HealthStatusWatcher",                  flags: "js|java" },
     { name: "HealthSupportRefines",                 flags: "js|java" },
@@ -23,7 +22,6 @@ foam.POM({
     { name: "SAFBOX",                               flags: "js|java" },
     { name: "SAFClientDAO",                         flags: "js|java" },
     { name: "SAFConfig",                            flags: "js|java" },
-    { name: "SAFConfigSupport",                     flags: "js|java" },
     { name: "SAFDAO",                               flags: "js|java" },
     { name: "SAFEntry",                             flags: "js|java" },
     { name: "SAFEntryFactory",                      flags: "js|java" },
@@ -32,6 +30,7 @@ foam.POM({
     { name: "SAFManager",                           flags: "js|java" },
     { name: "SAFMonitor",                           flags: "js|java" },
     { name: "SAFMonitorDAO",                        flags: "js|java" },
-    { name: "SAFSink",                              flags: "js|java" }
+    { name: "SAFSink",                              flags: "js|java" },
+    { name: "SAFSupport",                           flags: "js|java" }
   ]
 });

@@ -11,6 +11,30 @@ forwarding fail, it can be restared, picking up where it left of with
 <p>It is recommended that instances of a SAF cluster are located behind a Load Balancer (LB) configured with stick sessions (which keep each users activities on the same instance).</p>
 <p>For single instance deployments, SAF can be used for zero-downtime upgrades (see below).</p>
 
+<h1>Use - Inclusion in an application</h1>
+<p>SAF can be included in an application in two scenarios:</p>
+<ol>
+  <li>opt-in
+    <ul>
+      <li>-Jfoam-saf/deployment/sa</li>
+      <li>With opt-in, SAF defaults to disabled for all CSpecs using EasyDAO. To enable use: <b>setSaf(true)</b>.</li>
+    </ul>
+  </li>
+  <li>opt-out
+    <ul>
+      <li>-Jfoam-saf/deployment/saf-all</li>
+      <li>With opt-out, SAF defaults to enabled for all CSpecs using EasyDAO. To disable use: `setSaf(false)`</li>
+    </ul>
+  </li>
+</ol>
+<h2>Additional Configuration - incompleted</h2>
+See deployment/c2 for examples
+<ul>
+  <li>safconfigs.jrl - saf instance configuration</li>
+  <li>hosts.jrl - id to hostname mapping</li>
+  <li>sessionsinternal.jrl - session ids for inter-saf ssl connections</li>
+</ul>
+
 <h2>SAF in brief</h2>
 <p>SAF is setup via DAO decoration. EasyDAO installs a SAFBroadcastDAO
   above the MDAO.  On <b>put</b>, for example, the SAFBroadcastDAO takes the

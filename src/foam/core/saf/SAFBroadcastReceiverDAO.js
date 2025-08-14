@@ -19,19 +19,12 @@ foam.CLASS({
     'foam.core.saf.SAFEntry'
   ],
 
-  properties: [
-    {
-      name: 'loggingEnabled',
-      class: 'Boolean',
-      value: true
-    }
-  ],
-
   methods: [
     {
       name: 'put_',
       javaCode: `
       PM pm = PM.create(x, this.getClass().getSimpleName(), "put");
+      SAFSupport support = (SAFSupport) x.get("safSupport");
       SAFEntry entry = (SAFEntry) obj;
 
       DAO dao = ((DAO) x.get(entry.getCSpecName()));
@@ -47,9 +40,7 @@ foam.CLASS({
       }
       try {
         FObject nu = entry.getObject();
-        if ( getLoggingEnabled() ) {
-          Loggers.logger(x, this).info("SAFBroadcastReceiverDAO,receive",entry.getCSpecName(), entry.getDop(), nu);
-        }
+        if ( support.getVerbose() ) Loggers.logger(x, this).debug("SAFBroadcastReceiverDAO,receive",entry.getCSpecName(), entry.getDop(), nu);
         if ( DOP.PUT == entry.getDop() ) {
           nu = mdao.put_(x, nu);
         } else if ( DOP.REMOVE == entry.getDop() ) {

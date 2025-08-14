@@ -133,10 +133,11 @@ p({
 
 p({
   "class":"foam.core.boot.CSpec",
-  "name":"safConfigSupport",
-  "lazy":false,
+  "name":"safSupport",
+  "serve": true,
+  "lazy": false,
   "service": {
-    "class": "foam.core.saf.SAFConfigSupport"
+    "class": "foam.core.saf.SAFSupport"
   }
 })
 
