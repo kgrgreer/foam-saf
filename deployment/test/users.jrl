@@ -1,0 +1,14 @@
+p({
+  "class":"foam.core.auth.User",
+  "id":2,
+  "spid":"foam",
+  "firstName":"Socket",
+  "lastName":"API",
+  "email":"foam-saf@foamdev.com",
+  "password":"",
+  "group":"system",
+  "emailVerified":true,
+  "status":2,
+  "lifecycleState":1,
+  "loginEnabled":false
+})

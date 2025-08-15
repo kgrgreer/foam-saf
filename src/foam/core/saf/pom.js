@@ -10,12 +10,9 @@ foam.POM({
     { name: 'test/pom',                             flags: "test"},
   ],
   files: [
-    { name: "CronRefines",                          flags: "js|java" },
     { name: "DUGSFRuleAction",                      flags: "js|java" },
     { name: "DUGSFRule",                            flags: "js|java" },
-    { name: "HealthRefines",                        flags: "js|java" },
     { name: "HealthStatusWatcher",                  flags: "js|java" },
-    { name: "HealthSupportRefines",                 flags: "js|java" },
     { name: "SAF",                                  flags: "js|java" },
     { name: "SAFBroadcastDAO",                      flags: "js|java" },
     { name: "SAFBroadcastReceiverDAO",              flags: "js|java" },

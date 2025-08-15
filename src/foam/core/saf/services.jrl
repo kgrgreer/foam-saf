@@ -1,0 +1,155 @@
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safThreadPool",
+  "lazy": false,
+  "serve": false,
+  "serviceScript": `
+    return new foam.core.pool.ThreadPoolAgency.Builder(x)
+      .setPrefix("saf")
+      .build();
+  `
+})
+
+p({
+  class: "foam.core.boot.CSpec",
+  name: "SAFEntry",
+  description: "SAFEntry Factory",
+  authenticate: false,
+  pm: false,
+  service: {
+    class: "foam.core.saf.SAFEntryFactory"
+  }
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safManager",
+  "lazy": false,
+  "service": {
+    "class": "foam.core.saf.SAFManager"
+  }
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"internalSAFDAO",
+  "description": "A read-only database of SAF.",
+  "serve":true,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setAuthorize(false)
+      .setPm(true)
+      .setPipelinePm(false)
+      .setReadOnly(true)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setJournalName("storeAndForwards")
+      .setCluster(false)
+      .setSaf(false)
+      .setOf(foam.core.saf.SAF.getOwnClassInfo())
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.core.saf.SAF"
+    }
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safDAO",
+  "serve":false,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.saf.SAF.getOwnClassInfo())
+      .setCluster(false)
+      .setSaf(false)
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.core.saf.SAF"
+    }
+  """
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safMonitorDAO",
+  "serve":true,
+  "serviceScript":
+  """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.saf.SAFMonitor.getOwnClassInfo())
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .setPm(true)
+      .setDelegate(new foam.core.saf.SAFMonitorDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFMonitor.getOwnClassInfo()))
+      .build())
+      .build();
+  """,
+  "client":
+  """
+    {
+      "of":"foam.core.saf.SAFMonitor"
+    }
+  """
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safBroadcastReceiverDAO",
+  "serve": true,
+  "serviceScript": `
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.saf.SAFEntry.getOwnClassInfo())
+      .setNullify(true)
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .setPm(true)
+      .setDelegate(new foam.core.saf.SAFBroadcastReceiverDAO.Builder(x)
+        .setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFEntry.getOwnClassInfo()))
+      .build())
+      .build();
+   `
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safConfigDAO",
+  "serve": true,
+  "lazy": false,
+  "serviceScript": `
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.saf.SAFConfig.getOwnClassInfo())
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setJournalName("safconfigs")
+      .setCluster(false)
+      .setSaf(false)
+      .setRuler(false)
+      .build();
+   `,
+  "client": `
+    {
+      "of":"foam.core.saf.SAFConfig"
+    }
+  `
+})
+
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"safSupport",
+  "serve": true,
+  "lazy": false,
+  "service": {
+    "class": "foam.core.saf.SAFSupport"
+  }
+})
+
