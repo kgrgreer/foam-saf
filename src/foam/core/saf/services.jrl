@@ -153,3 +153,25 @@ p({
   }
 })
 
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "safTestObjectDAO",
+  "serve": true,
+  "lazy": false,
+  "serviceScript": `
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(foam.core.saf.test.SAFTestObject.getOwnClassInfo())
+      .setFuid(true)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .setJournalName("saftestobjects")
+      .setCluster(false)
+      .setSaf(true)
+      .setRuler(false)
+      .build();
+   `,
+  "client": `
+    {
+      "of":"foam.core.saf.test.SAFTestObject"
+    }
+  `
+})

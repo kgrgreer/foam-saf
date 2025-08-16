@@ -17,7 +17,7 @@ foam.CLASS({
     'id',
     'ready',
     'index',
-    'onHoldListSize'
+    'onHold'
   ],
 
   javaCode: `
@@ -26,7 +26,7 @@ foam.CLASS({
       this.setId(saf.getId());
       this.setReady(saf.getReady());
       this.setIndex(saf.getIndex());
-      this.setOnHoldListSize(saf.getOnHoldListSize());
+      this.setOnHold(saf.getOnHold());
     }
   `
 })

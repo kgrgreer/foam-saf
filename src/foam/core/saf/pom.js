@@ -29,6 +29,8 @@ foam.POM({
     { name: "SAFMonitor",                           flags: "js|java" },
     { name: "SAFMonitorDAO",                        flags: "js|java" },
     { name: "SAFSink",                              flags: "js|java" },
-    { name: "SAFSupport",                           flags: "js|java" }
+    { name: "SAFSupport",                           flags: "js|java" },
+    // test object is deployed to production
+    { name: "test/SAFTestObject",                   flags: "js|java" }
   ]
 });

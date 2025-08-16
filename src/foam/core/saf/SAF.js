@@ -129,7 +129,7 @@ If -1, no using timeWindow`,
     },
     {
       class: 'Long',
-      name: 'onHoldListSize',
+      name: 'onHold',
       javaGetter: 'return onHoldList_.size();',
       storageTransient: true,
       visibility: 'RO'
