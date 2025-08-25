@@ -88,9 +88,9 @@ foam.CLASS({
         if ( session != null ) {
           sessionId = session.getId();
         }
-        return new NotificationClientDAO.Builder(x)
+        return new NotificationClientDAO.Builder(getX())
           .setOf(SAFEntry.getOwnClassInfo())
-          .setDelegate(new SessionClientBox.Builder(x)
+          .setDelegate(new SessionClientBox.Builder(getX())
           .setSessionID(sessionId)
           .setDelegate(getSocketClientBox(x, serviceName, senderConfig, receiverConfig))
           .build())
@@ -119,7 +119,7 @@ foam.CLASS({
         }
 
         SocketClientBox clientBox = new SocketClientBox();
-        clientBox.setX(x);
+        clientBox.set(getX());
         clientBox.setHost(address);
         clientBox.setPort(port);
         clientBox.setServiceName(serviceName);
