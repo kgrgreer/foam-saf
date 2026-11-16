@@ -118,8 +118,7 @@ foam.CLASS({
           port = foam.net.Port.get(x, "SocketServer");
         }
 
-        SocketClientBox clientBox = new SocketClientBox();
-        clientBox.set(getX());
+        SocketClientBox clientBox = new SocketClientBox(getX());
         clientBox.setHost(address);
         clientBox.setPort(port);
         clientBox.setServiceName(serviceName);

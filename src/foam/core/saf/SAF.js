@@ -40,12 +40,13 @@ foam.CLASS({
     'java.nio.file.*',
     'java.nio.file.attribute.*',
     'java.io.IOException',
+    'java.io.PrintWriter',
+    'java.io.StringWriter',
     'java.util.concurrent.atomic.AtomicInteger',
     'java.util.concurrent.atomic.AtomicLong',
     'java.util.concurrent.atomic.AtomicBoolean',
     'java.util.concurrent.ConcurrentHashMap',
     'java.util.*',
-    'org.apache.commons.lang.exception.ExceptionUtils'
   ],
 
   tableColumns: [
@@ -459,10 +460,12 @@ If -1, no using timeWindow`,
       args: 'SAFEntry e, Throwable t',
       javaType: 'String',
       javaCode:`
-        String stackTrace = ExceptionUtils.getStackTrace(t);
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        t.printStackTrace(pw);
         Outputter outputter = new Outputter(getX()).setPropertyPredicate(new NetworkPropertyPredicate());
         String entity = outputter.stringify(e.getObject());
-        return entity + " \\n " + stackTrace;
+        return entity + " \\n " + sw.toString();
       `
     },
     {

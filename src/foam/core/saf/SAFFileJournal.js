@@ -131,8 +131,12 @@ foam.CLASS({
           if ( fmt.builder().length() == 0 ) return;
 
           try {
+            // false writes the entry as p(...), never c(...): calculateSize
+            // counts the bytes of a "p(" entry, and replayFrom only applies
+            // 'p' and 'r' entries, so a c(...) entry would be skipped.
             writePut_(
               x,
+              false,
               fmt.builder(),
               getMultiLineOutput() ? "\\n" : "",
               SafetyUtil.isEmpty(prefix) ? "" : prefix + ".");

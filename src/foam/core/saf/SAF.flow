@@ -1,5 +1,7 @@
+<flow name="SAF: Store and Forward" description="Store And Forward (SAF) is a delayed-time, one-way, data communication technique for replicating data changes on one instance to other instances." keywords="knowledge,saf" childLock="true"/>
+
 <title>Store and Forward (SAF)</title>
-<p>Store And Forward (SAF) is a delayed-ime, one-way, data communication
+<p>Store And Forward (SAF) is a delayed-time, one-way, data communication
 technique for replicating data changes on one instance to other instances.</p>
 See https://www.twingate.com/blog/glossary/store-and-forward and
 https://en.wikipedia.org/wiki/Store_and_forward
