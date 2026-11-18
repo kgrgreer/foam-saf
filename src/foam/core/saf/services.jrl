@@ -118,6 +118,11 @@ p({
         .setDelegate(new foam.dao.NullDAO(x, foam.core.saf.SAFEntry.getOwnClassInfo()))
       .build())
       .build();
+   `,
+  "client": `
+    {
+      "of":"foam.core.saf.SAFEntry"
+    }
    `
 })
 
