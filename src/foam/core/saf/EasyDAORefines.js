@@ -15,7 +15,7 @@ foam.CLASS({
       args: 'foam.dao.DAO delegate',
       type: 'foam.dao.DAO',
       javaCode: `
-        if ( getMdao() != null &&
+        if ( /* getMdao() != null &&*/
              getSaf() ) {
           return new foam.core.saf.SAFBroadcastDAO.Builder(getX())
             .setCSpec(getCSpec())
