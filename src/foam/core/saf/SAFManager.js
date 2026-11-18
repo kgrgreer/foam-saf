@@ -166,7 +166,7 @@ If -1, no using timeWindow`,
                   }
 
                   Health health = healthSupport.getHealth(x, saf.getId());
-                  if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,health", saf.getId(), health.toSummary());
+                  if ( support.getVerbose() && health != null ) Loggers.logger(x).debug("SAFManager,forwarder,health", saf.getId(), health.toSummary());
                   if ( health != null &&
                        ( health.getStatus() == HealthStatus.UP ||
                          health.getStatus() == HealthStatus.MAINT ) ) {
