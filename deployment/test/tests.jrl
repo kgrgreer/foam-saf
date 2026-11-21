@@ -1,4 +1,5 @@
 p({
   class: "foam.core.saf.test.SAFClusterTest",
-  id: "SAFClusterTest"
+  id: "SAFClusterTest",
+  testSuite: "saf"
 })

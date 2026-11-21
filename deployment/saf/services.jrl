@@ -53,14 +53,28 @@ p({
 
 p({
   "class": "foam.core.boot.CSpec",
+  "name": "healthHeartbeatService",
+  "enabled": true
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
   "name": "healthStatusWatcher",
   "lazy": false,
+  "enabled": true,
   "serviceClass": "foam.core.saf.HealthStatusWatcher"
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "healthHeartbeatMonitor",
+  "enabled": true
 })
 
 p({
   "class": "foam.core.boot.CSpec",
   "name": "shutdownWatcher",
   "lazy": false,
+  "enabled": true,
   "serviceClass": "foam.core.app.ShutdownWatcher"
 })

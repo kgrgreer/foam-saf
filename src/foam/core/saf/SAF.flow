@@ -1,5 +1,7 @@
+<flow name="SAF: Store and Forward" description="Store And Forward (SAF) is a delayed-time, one-way, data communication technique for replicating data changes on one instance to other instances." keywords="knowledge,saf" childLock="true"/>
+
 <title>Store and Forward (SAF)</title>
-<p>Store And Forward (SAF) is a delayed-ime, one-way, data communication
+<p>Store And Forward (SAF) is a delayed-time, one-way, data communication
 technique for replicating data changes on one instance to other instances.</p>
 See https://www.twingate.com/blog/glossary/store-and-forward and
 https://en.wikipedia.org/wiki/Store_and_forward
@@ -97,3 +99,54 @@ Health status is <b>UP</b> or <b>MAINT</b>.</p>
 
 <h1>Testing</h1>
 <p>see foam/core/saf/test/SAFClusterTest.  A test which mimics a two instance cluster. Manipulates SAFConfig and HealthStatus to test that DAO operations are stored and eventually delivered to the 'other' instance.</p>
+
+<h1>Receiving</h1>
+<p>SAF has no separate server component. Every instance that includes
+  the saf deployment both sends and receives. On the receiving side,
+  the foam3 socket server routes incoming messages to the
+  <b>safBroadcastReceiverDAO</b> CSpec, which applies each entry to the
+  target DAO's MDAO.</p>
+
+<h2>How an entry reaches the receiver</h2>
+<ol>
+  <li>Socket server. The foam3 <b>socketServer</b> CSpec starts at boot
+    (lazy:false). It listens on the <b>SocketServer</b> port, which is
+    the http port + 3 (foam/box/socket/ports.jrl). The build's -W option
+    sets the http port, so -W8698 means the socket server listens on 8701.</li>
+  <li>Routing. SocketRouter takes the service name from the message's
+    SubBoxMessage and looks up the CSpec with that name. It sends the
+    message through SessionServerBox, which applies session
+    authentication.</li>
+  <li>Receiver CSpec. <b>safBroadcastReceiverDAO</b> is an EasyDAO with
+    serve:true, so the router can reach it, and with saf and ruler both
+    false. It wraps SAFBroadcastReceiverDAO over a NullDAO.</li>
+  <li>Apply. SAFBroadcastReceiverDAO.put_ looks up the DAO named by the
+    entry's cSpecName, takes its innermost DAO with
+    cmd_(DAO.LAST_CMD), and calls put_ or remove_ on it according to the
+    entry's dop. This skips the rules, authorization and the
+    SAFBroadcastDAO above the MDAO, so a received entry is never
+    forwarded on again.</li>
+</ol>
+
+<h2>How the sender connects to it</h2>
+<ul>
+  <li>Who to send to. SAFManager.getBroadcastIds selects every enabled
+    SAFConfig other than the instance's own, and createClient makes one
+    SAFClientDAO for each. The instance finds its own SAFConfig by the
+    <b>hostname</b> system property; when that is 'localhost' it uses
+    the user.name property instead.</li>
+  <li>Service name. SAFClientDAO sends to the service
+    <b>safBroadcastReceiverDAO</b>.</li>
+  <li>Address. SAFSupport.getSocketClientBox looks up the SAFConfig id in
+    hostDAO (hosts.jrl) to get the address. It uses the SAFConfig port,
+    and falls back to the SocketServer port only when that port is 0.
+    The fallback uses the sender's own SocketServer port, so it only
+    works when both instances use the same -W.</li>
+  <li>Login. SAFSupport.getBroadcastClientDAO wraps the socket box in a
+    SessionClientBox using the receiver SAFConfig's sessionId, or the
+    session of the sending context when there is one. That session must
+    exist on the receiver (sessionsinternal.jrl), along with the user it
+    belongs to (users.jrl).</li>
+  <li>Config rows. Each instance needs a safconfigs.jrl row for every
+    peer.</li>
+</ul>

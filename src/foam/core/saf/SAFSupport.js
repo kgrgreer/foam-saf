@@ -35,8 +35,7 @@ foam.CLASS({
   properties: [
     {
       name: 'verbose',
-      class: 'Boolean',
-      value: true
+      class: 'Boolean'
     },
     {
       name: 'threadPoolName',
@@ -118,12 +117,11 @@ foam.CLASS({
           port = foam.net.Port.get(x, "SocketServer");
         }
 
-        SocketClientBox clientBox = new SocketClientBox();
-        clientBox.set(getX());
+        SocketClientBox clientBox = new SocketClientBox(getX());
         clientBox.setHost(address);
         clientBox.setPort(port);
         clientBox.setServiceName(serviceName);
-        // getLogger().debug("getSocketClientBox", serviceName, clientBox);
+        Loggers.logger(x, this).debug("getSocketClientBox", serviceName, clientBox);
         return clientBox;
       } finally {
         pm.log(x);

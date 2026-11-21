@@ -126,7 +126,7 @@ delivered to the 'other' instance.
         // SAFManager should now have one SAF
         test ( safManager.getSafs().size() == 1, "SAFManager one SAFs found: "+safManager.getSafs().size());
         SAF saf = (SAF) safManager.getSafs().get(id2_);
-        test ( saf.getId() == id2_, "SAF "+id2_+" found: "+saf.getId());
+        test ( saf.getId().equals(id2_), "SAF "+id2_+" found: "+saf.getId());
         test ( saf.getIndex() == 0, "SAF index 0: "+saf.getIndex());
 
         // create an update, nothing should occur
