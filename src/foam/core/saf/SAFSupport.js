@@ -122,7 +122,7 @@ foam.CLASS({
         clientBox.setHost(address);
         clientBox.setPort(port);
         clientBox.setServiceName(serviceName);
-        // getLogger().debug("getSocketClientBox", serviceName, clientBox);
+        Loggers.logger(x, this).debug("getSocketClientBox", serviceName, clientBox);
         return clientBox;
       } finally {
         pm.log(x);

@@ -145,10 +145,10 @@ If -1, no using timeWindow`,
           @Override
           public void execute(X x) {
             while ( true ) {
-              if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,queue",queue.size());
               if ( queue.size() > 0 ) {
-                if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
+                if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,queue",queue.size());
                 if ( queue.peek().getScheduledTime() <= System.currentTimeMillis() ) {
+                  if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
                   SAFEntry e = queue.peek();
                   final SAF saf = (SAF) getSafs().get(e.getSaf());
                   if ( saf == null ) {
