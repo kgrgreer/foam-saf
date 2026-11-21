@@ -35,8 +35,7 @@ foam.CLASS({
   properties: [
     {
       name: 'verbose',
-      class: 'Boolean',
-      value: true
+      class: 'Boolean'
     },
     {
       name: 'threadPoolName',
