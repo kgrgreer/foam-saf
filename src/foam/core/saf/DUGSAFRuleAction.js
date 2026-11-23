@@ -15,7 +15,7 @@ foam.CLASS({
     'foam.dao.DAO',
     'foam.dao.HTTPSink',
     'foam.dao.Sink',
-    'foam.core.logger.Loggers'
+    'foam.core.logger.StdoutLogger'
   ],
   
   properties: [
@@ -34,7 +34,7 @@ foam.CLASS({
         SAFManager safManager = (SAFManager) agencyX.get("safManager");
         Sink sink = (Sink) safManager.getSafs().get(getSafId());
         if ( sink == null ) {
-          Loggers.logger(agencyX, this).error("SAF Sink not found, SAFId", getSafId());
+          StdoutLogger.instance().error("SAF Sink not found, SAFId", getSafId());
           throw new RuntimeException("SAF Sink not found");
          }
         return sink;

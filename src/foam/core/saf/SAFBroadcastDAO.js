@@ -24,8 +24,7 @@ NOTE: This is incompatible with DAOs using SeqNo.`,
     'foam.core.app.HealthAware',
     'foam.core.app.HealthStatus',
     'foam.core.app.HealthSupport',
-    'foam.core.logger.Logger',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.dao.DAO',
     'foam.dao.DOP',
     'foam.dao.Sink',
@@ -97,7 +96,7 @@ NOTE: This is incompatible with DAOs using SeqNo.`,
             try {
               client.put((SAFEntry) entry.fclone());
             } catch ( Throwable t ) {
-              Loggers.logger(x, this).error(getCSpec().getName(), "broadcast", client, t);
+              StdoutLogger.instance().error(getCSpec().getName(), "broadcast", client, t);
             }
           }
         }, this.getClass().getSimpleName());

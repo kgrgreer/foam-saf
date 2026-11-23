@@ -15,7 +15,7 @@ foam.CLASS({
     'foam.core.app.Health',
     'foam.core.app.HealthStatus',
     'foam.core.logger.Logger',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.dao.DAO',
     'foam.lang.X',
     'foam.util.SafetyUtil'
@@ -36,7 +36,7 @@ foam.CLASS({
     {
       name: 'handleRequest',
       javaCode: `
-        Logger logger = Loggers.logger(x, this);
+        Logger logger = StdoutLogger.instance();
         HealthStatus status = HealthStatus.valueOf(request);
         DAO dao = (DAO) x.get("healthDAO");
         Health health = (Health) x.get("Health");

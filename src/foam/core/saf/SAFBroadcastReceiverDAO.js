@@ -15,7 +15,7 @@ foam.CLASS({
     'foam.dao.DAO',
     'foam.dao.DOP',
     'foam.core.pm.PM',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.core.saf.SAFEntry'
   ],
 
@@ -29,18 +29,18 @@ foam.CLASS({
 
       DAO dao = ((DAO) x.get(entry.getCSpecName()));
       if ( dao == null ) {
-        Loggers.logger(x, this).warning("SAFBroadcastReceiverDAO,CSpec not found", entry.getCSpecName());
+        StdoutLogger.instance().warning("SAFBroadcastReceiverDAO,CSpec not found", entry.getCSpecName());
         return obj;
       }
       DAO mdao = (DAO) dao.cmd_(x, foam.dao.DAO.LAST_CMD);
       if ( mdao == null ) {
-        Loggers.logger(x, this).error("SAFBroadcastReceiverDAO,DAO not found", entry.getCSpecName());
+        StdoutLogger.instance().error("SAFBroadcastReceiverDAO,DAO not found", entry.getCSpecName());
         // Alarm? - this may cause a feedback loop.
         return obj;
       }
       try {
         FObject nu = entry.getObject();
-        if ( support.getVerbose() ) Loggers.logger(x, this).debug("SAFBroadcastReceiverDAO,receive",entry.getCSpecName(), entry.getDop(), nu);
+        if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFBroadcastReceiverDAO,receive",entry.getCSpecName(), entry.getDop(), nu);
         if ( DOP.PUT == entry.getDop() ) {
           nu = mdao.put_(x, nu);
         } else if ( DOP.REMOVE == entry.getDop() ) {
@@ -51,7 +51,7 @@ foam.CLASS({
         return nu;
       } catch (Throwable t) {
         pm.error(x, entry, t);
-        Loggers.logger(x, this).error("put", entry, t.getMessage(), t);
+        StdoutLogger.instance().error("put", entry, t.getMessage(), t);
         throw t;
       } finally {
         pm.log(x);

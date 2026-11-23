@@ -18,7 +18,7 @@ foam.CLASS({
     'foam.core.fs.Storage',
     'foam.core.fs.FileSystemStorage',
     'foam.core.logger.Logger',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.core.logger.PrefixLogger',
     'foam.core.om.OMLogger',
     'foam.dao.*',
@@ -191,7 +191,7 @@ If -1, no using timeWindow`,
       documentation: 'Add the entry into process queue.',
       javaCode: `
         /* Assign initial time and enqueue. */
-        if ( ((SAFSupport)getX().get("safSupport")).getVerbose() ) Loggers.logger(getX(), this).debug("forward,enqueue", e);
+        if ( ((SAFSupport)getX().get("safSupport")).getVerbose() ) StdoutLogger.instance().debug("forward,enqueue", e);
         e.setScheduledTime(System.currentTimeMillis());
         ((SAFManager) getManager()).enqueue(e);
       `
@@ -209,7 +209,7 @@ If -1, no using timeWindow`,
         if ( health == null ||
              ( health.getStatus() != HealthStatus.UP &&
                health.getStatus() != HealthStatus.DRAIN ) ) {
-          if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) Loggers.logger(x, this).debug("storeAndForward discard,local not UP or DRAIN");
+          if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) StdoutLogger.instance().debug("storeAndForward discard,local not UP or DRAIN");
           return fobject;
         }
         if ( ! getReady() ) {
@@ -235,7 +235,7 @@ If -1, no using timeWindow`,
           entry = (SAFEntry) journal.put(getX(), "", (DAO) getNullDao(), entry);
 
           synchronized ( onHoldListLock_ ) {
-            if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) Loggers.logger(x, this).debug("storeAndForward,onHoldList", onHoldList_.size());
+            if ( ((SAFSupport)x.get("safSupport")).getVerbose() ) StdoutLogger.instance().debug("storeAndForward,onHoldList", onHoldList_.size());
             if ( onHoldList_.isEmpty() ) {
               onHoldList_.add(entry);
               cleanEntryInfos();
@@ -319,7 +319,7 @@ If -1, no using timeWindow`,
         else if ( delegate instanceof DAO ) ((DAO) delegate).put_(x, entry.getObject());
         else if ( delegate instanceof Sink ) ((Sink) delegate).put(entry.getObject(), null);
         else {
-          Loggers.logger(getX(), this).error("DelegateObject type not supported", delegate.getClass().getName());
+          StdoutLogger.instance().error("DelegateObject type not supported", delegate.getClass().getName());
           throw new RuntimeException("DelegateObject type not supported");
         }
       `
@@ -336,7 +336,7 @@ If -1, no using timeWindow`,
       args: 'Context x',
       documentation: 'when system start, SAFManager will call this service to initialize re-forward',
       javaCode: `
-        logger_ = Loggers.logger(x, this, getId(), getFileName());
+        logger_ = StdoutLogger.instance();
         logger_.info("initialize");
         createDelegate();
         FileSystemStorage fileSystemStorage = getX().get(foam.core.fs.FileSystemStorage.class);
@@ -390,11 +390,11 @@ If -1, no using timeWindow`,
 
             journalMap_.put(getSimpleFilename(filename), journal);
             if ( journal.getFileOffset() == journal.getFileSize() ) {
-              Loggers.logger(getX(), this).info("SAF file complete", getId(), "file: " + getSimpleFilename(filename));
+              StdoutLogger.instance().info("SAF file complete", getId(), "file: " + getSimpleFilename(filename));
               continue;
             }
             if ( journal.getFileOffset() > journal.getFileSize() ) {
-              Loggers.logger(getX(), this).error("SAF file error", getId(), "A-time of file: " + getSimpleFilename(filename) + " is greater than its filesize");
+              StdoutLogger.instance().error("SAF file error", getId(), "A-time of file: " + getSimpleFilename(filename) + " is greater than its filesize");
               journal.setFileOffset(journal.getFileSize());
               continue;
             }

@@ -15,6 +15,7 @@ foam.CLASS({
     'foam.lang.FObject',
     'foam.lib.json.JSONParser',
     'foam.core.pm.PM',
+    'foam.core.logger.StdoutLogger',
     'foam.util.concurrent.AssemblyLine',
     'foam.util.SafetyUtil',
     'java.io.BufferedReader',
@@ -122,7 +123,7 @@ foam.CLASS({
           try {
             fmt.output(obj, of);
           } catch (Throwable t) {
-            getLogger().error("Failed to format put", getFilename(), of.getId(), "id", id, t);
+            StdoutLogger.instance().error("Failed to format put", getFilename(), of.getId(), "id", id, t);
             fmt.reset();
           }
         }
@@ -143,7 +144,7 @@ foam.CLASS({
 
             if ( isLast ) getWriter().flush();
           } catch (Throwable t) {
-            getLogger().error("Failed to write put", getFilename(), of.getId(), "id", id, t);
+            StdoutLogger.instance().error("Failed to write put", getFilename(), of.getId(), "id", id, t);
           }  finally {
             fmt.reset();
           }
@@ -218,7 +219,7 @@ foam.CLASS({
 
               public void endJob(boolean isLast) {
                 if ( obj == null ) {
-                  getLogger().error("Parse error", getParsingErrorMessage(strEntry), "entry:", strEntry);
+                  StdoutLogger.instance().error("Parse error", getParsingErrorMessage(strEntry), "entry:", strEntry);
                   return;
                 }
                 switch ( operation ) {
@@ -234,15 +235,15 @@ foam.CLASS({
               }
             });
           } catch ( Throwable t ) {
-            getLogger().error("Error replaying journal", dao.getOf().getId(), entry, t);
+            StdoutLogger.instance().error("Error replaying journal", dao.getOf().getId(), entry, t);
           }
         }
       } catch ( Throwable t) {
-        getLogger().error("Failed to read journal", dao.getOf().getId(), t);
+        StdoutLogger.instance().error("Failed to read journal", dao.getOf().getId(), t);
       } finally {
         assemblyLine.shutdown();
         pm.log(x);
-        getLogger().log("Successfully read " + successReading.get() + " entries from file: " + getFilename() + " in: " + pm.getTime() + "(ms)");
+        StdoutLogger.instance().log("Successfully read " + successReading.get() + " entries from file: " + getFilename() + " in: " + pm.getTime() + "(ms)");
       }
       `
     }
