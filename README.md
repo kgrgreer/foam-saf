@@ -493,3 +493,12 @@ destination**: when a destination is unreachable its forwarder stops and its
 in-memory queue is released; when the destination returns, the forwarder
 restarts and replays from the persisted **store** file, as it already does at
 startup.
+
+---
+
+## Future Features
+
+- **Clean-shutdown status.** When an instance shuts down cleanly, have it send a
+  `MAINT` or `DOWN` Health status to its peers before exiting. A monitor then
+  records the instance as intentionally down instead of raising
+  missed-heartbeat alarms once the heartbeats stop.
