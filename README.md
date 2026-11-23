@@ -220,6 +220,11 @@ is absent from its `healthDAO` and SAF will **not forward** to it (no "UP"
 signal) — so a broken heartbeat looks exactly like a cluster that never
 forwards.
 
+On a graceful JVM shutdown `HealthHeartbeatService.stop()` (a `COREService`
+stop, called by `CSpecFactory.shutdown()`) sends one final `DOWN` heartbeat, so
+a monitor records the instance as intentionally down rather than waiting for its
+heartbeats to time out.
+
 `HealthHeartbeatService.mode` (`foam.core.app.HeartbeatMode`) chooses how
 heartbeats are delivered. Default is `BROADCAST`; nothing needs setting for the
 normal case.
@@ -542,12 +547,3 @@ destination**: when a destination is unreachable its forwarder stops and its
 in-memory queue is released; when the destination returns, the forwarder
 restarts and replays from the persisted **store** file, as it already does at
 startup.
-
----
-
-## Future Features
-
-- **Clean-shutdown status.** When an instance shuts down cleanly, have it send a
-  `MAINT` or `DOWN` Health status to its peers before exiting. A monitor then
-  records the instance as intentionally down instead of raising
-  missed-heartbeat alarms once the heartbeats stop.
