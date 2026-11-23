@@ -36,6 +36,7 @@ Recommended deployments:
 * [The receive path](#the-receive-path)
 * [PULSE — Platform Usage, Logs, and System Events](#pulse--platform-usage-logs-and-system-events)
   * [Caveat: DAOs that use SeqNo for ids](#caveat-daos-that-use-seqno-for-ids)
+* [Troubleshooting — nothing is forwarding](#troubleshooting--nothing-is-forwarding)
 * [Zero-downtime upgrades](#zero-downtime-upgrades)
 * [Writing your own SAF](#writing-your-own-saf)
 * [SAF in Medusa](#saf-in-medusa)
@@ -394,6 +395,45 @@ at 1. The SAF receiver writes a forwarded row straight to the terminal MDAO
 SeqNo DAO that is **not** SAF-forwarded is fine (e.g. `monitoringReportDAO` uses
 `setSeqNo(true)` but no SAF). The rule is specifically: **never forward a
 `setSeqNo(true)` DAO into a shared receiver.**
+
+---
+
+## Troubleshooting — nothing is forwarding
+
+SAF failures are usually quiet: data just doesn't arrive. Work down this list.
+
+1. **`healthDAO` is empty / no peer shows up.** SAF forwards to a destination
+   only while that destination's Health is `UP` or `MAINT`, which it learns from
+   the heartbeat. Check each instance's `GET /service/health`: a populated
+   `address` (not `""`) means it is receiving heartbeats. If empty:
+   - the heartbeat self-disables unless `-Dhostname` is a real name (not
+     `localhost`) — confirm the instance's hostname;
+   - on macOS with a VPN, loopback multicast needs the host route — see
+     [Health heartbeat and delivery modes](#health-heartbeat-and-delivery-modes).
+
+2. **An instance never stores/forwards its own updates.** Its *own* Health must
+   be `UP` or `DRAIN`; at `DOWN` it stores nothing. Something has to set it `UP`
+   — a deployment that defaults it (e.g. a monitor), the application once it is
+   stable, or the `UP` status file. A client left at `DOWN` (for example started
+   without the opt-in that defaults it `UP`) is the common case: it looks healthy
+   but silently forwards nothing until it goes `UP`.
+
+3. **Stored but never delivered (the sender can't reach the peer).** Check the
+   destination's `SAFConfig`: an explicit `port` (the fallback uses the
+   *sender's own* socket port), a `sessionId` that exists in the receiver's
+   `sessionsinternal.jrl`, and an address that resolves (`hosts.jrl` or
+   `/etc/hosts`). See [Port configuration](#port-configuration--read-this).
+
+4. **Receiver logs `DAO not found`.** The target DAO's innermost store could not
+   be reached via `LAST_CMD` — e.g. a partitioned DAO that does not answer it.
+
+5. **Boot hangs.** A DAO used for logging must not be SAF-enabled: a log written
+   during boot re-enters the log journal under its own lock and deadlocks. Keep
+   `setSaf(false)` on the log DAO.
+
+6. **Rows overwrite each other on the monitor.** A forwarded DAO uses
+   `setSeqNo(true)`; per-instance counters collide. Use FUID or a host-qualified
+   id — see [the SeqNo caveat](#caveat-daos-that-use-seqno-for-ids).
 
 ---
 
