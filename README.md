@@ -32,6 +32,7 @@ Recommended deployments:
 * [Configuration files](#configuration-files)
 * [Port configuration — read this](#port-configuration--read-this)
 * [Health: store / forward gating](#health-store--forward-gating)
+* [Health heartbeat and delivery modes](#health-heartbeat-and-delivery-modes)
 * [The receive path](#the-receive-path)
 * [PULSE — Platform Usage, Logs, and System Events](#pulse--platform-usage-logs-and-system-events)
   * [Caveat: DAOs that use SeqNo for ids](#caveat-daos-that-use-seqno-for-ids)
@@ -206,6 +207,54 @@ touch /tmp/<hostname>/<appname>/UP      # -> status UP
 touch /tmp/<hostname>/<appname>/MAINT   # -> status MAINT
 touch /tmp/<hostname>/<appname>/DOWN    # -> status DOWN
 ```
+
+---
+
+## Health heartbeat and delivery modes
+
+The store/forward gates above read Health status out of **healthDAO**. That DAO
+is populated by a **heartbeat**: each instance's `HealthHeartbeatService`
+periodically sends its own Health, and also listens and writes what it receives
+into `healthDAO`. Until an instance has received a peer's heartbeat, that peer
+is absent from its `healthDAO` and SAF will **not forward** to it (no "UP"
+signal) — so a broken heartbeat looks exactly like a cluster that never
+forwards.
+
+`HealthHeartbeatService.mode` (`foam.core.app.HeartbeatMode`) chooses how
+heartbeats are delivered. Default is `BROADCAST`; nothing needs setting for the
+normal case.
+
+| mode | delivery |
+|------|----------|
+| `BROADCAST` *(default)* | Multicast to the group (`230.22.41.0:52241`) on the OS default interface. |
+| `LOOPBACK` | Multicast pinned to the loopback interface, for several instances on one host (local testing). |
+| `DIRECT` | Unicast to each peer from `getPeers()`, for environments such as AWS that do not support multicast. In foam-saf, `getPeers` is refined to return the enabled `SAFConfig`s other than this instance (`HealthHeartbeatServiceRefines`), so DIRECT reaches exactly the SAF peers. |
+
+### LOOPBACK for local single-box testing
+
+Running two or more instances on one machine, the heartbeat group can be routed
+off the box by a VPN (`utun*`) or an interface's reject route, so the instances
+never see each other. The **loopback** deployment switches the heartbeat to
+`LOOPBACK`. Opt in per run from an app that has foam-saf beside foam3:
+
+```sh
+deployment/<app>/run.sh -J../foam-saf/deployment/loopback
+```
+
+**macOS, only with an active VPN:** macOS ignores `IP_MULTICAST_IF` for `lo0`, so
+`LOOPBACK` alone can't force loopback the way it does on Linux. When a VPN is up,
+add a loopback route for the group so the sends stay on `lo0`:
+
+```sh
+sudo route -n add -net 230.22.41.0/24 -interface lo0   # add (not persistent)
+netstat -rn | grep 230.22                              # expect: 230.22.41  lo0
+sudo route -n delete -net 230.22.41.0/24 -interface lo0
+```
+
+No app restart is needed after adding the route — the next heartbeat (~3s)
+flows. Without a VPN the route is not needed. Do **not** use `LOOPBACK` in a
+multi-host deployment; there the heartbeat must use a routable interface
+(`BROADCAST`) or `DIRECT`.
 
 ---
 

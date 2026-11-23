@@ -1,0 +1,27 @@
+// LOOPBACK heartbeat for local single-box testing. Opt in with
+//   -J../foam-saf/deployment/loopback
+// when running two or more SAF instances on one machine, e.g.
+//   deployment/<app>/run.sh -J../foam-saf/deployment/loopback
+//
+// Why: on the OS default interface a VPN (utun*) or an interface's reject route
+// sends the 230.22.41.0 heartbeat group off the box, so instances on one machine
+// never see each other's heartbeats -- healthDAO stays empty and SAF has no
+// "destination is up" signal to forward on. LOOPBACK pins the heartbeat to the
+// loopback interface instead.
+//
+// CSpec.service is a plain property, not an FObjectProperty, so journal replay
+// REPLACES this block rather than deep-merging it onto the base
+// healthHeartbeatService CSpec (foam3 foam/core/app/services.jrl). So
+// multicastAddress and port must be restated here, kept in sync with the base;
+// only `mode` is new. `enabled` is a separate CSpec property set by the saf
+// deployment overlay, so replacing `service` leaves it untouched.
+p({
+  "class":"foam.core.boot.CSpec",
+  "name":"healthHeartbeatService",
+  "service":{
+    "class":"foam.core.app.HealthHeartbeatService",
+    "multicastAddress":"230.22.41.0",
+    "port":52241,
+    "mode":"LOOPBACK"
+  }
+})
