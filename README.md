@@ -158,6 +158,17 @@ server is listening on 8303. Nothing arrives.
 SocketServer port.** The `c2` example does this (`saf1` → `8303`, `saf2` →
 `8313`), which is why it works without ever hitting the fallback.
 
+**Exception — a uniform web port.** Because the fallback uses the *sender's*
+`http + 3`, it is correct precisely when every instance is deployed on the
+**same** http/web port: then the sender's `http + 3` equals the destination's
+SocketServer port, and you may omit `port` entirely and rely on the default. This
+is a legitimate convention for a fleet that standardises one web port across
+hosts (for example PULSE in production, where every client and the monitor run on
+the same `WEB_PORT`). It breaks the moment two communicating instances use
+different web ports — most commonly several instances on **one box** for local
+testing (e.g. client `8310`/`8313`, server `8698`/`8701`) — so there you must
+still set `port` explicitly.
+
 ```jrl
 p({
   "class":"foam.core.saf.SAFConfig",
@@ -195,6 +206,14 @@ replication:
   status is `UP` or `DRAIN` (and the destination's `SAFConfig` is `enabled`).
 * An instance **forwards** a stored update to a destination only when the
   **destination's** Health status is `UP` or `MAINT`.
+
+Health status also gates one thing beyond replication: when foam-saf is loaded, a
+**clusterable** cron runs only while the instance's own Health is `UP`. foam-saf
+refines `Cron.canRun` to return `health.getStatus() == UP` for a clusterable cron
+(`CronRefines.js`), and `Script.clusterable` defaults to `true`, so this applies
+to every cron unless one sets `clusterable: false`. A cron that fires while the
+instance is below `UP` is deferred, not run — see
+[Troubleshooting](#troubleshooting--nothing-is-forwarding), item 7.
 
 ### Manipulating Health status from the file system
 
@@ -434,6 +453,18 @@ SAF failures are usually quiet: data just doesn't arrive. Work down this list.
 6. **Rows overwrite each other on the monitor.** A forwarded DAO uses
    `setSeqNo(true)`; per-instance counters collide. Use FUID or a host-qualified
    id — see [the SeqNo caveat](#caveat-daos-that-use-seqno-for-ids).
+
+7. **An instance runs no cron jobs / behaves as if idle.** Loading foam-saf
+   refines `Cron.canRun` so a **clusterable** cron (the default —
+   `Script.clusterable` is `true`) runs only while the instance's Health is `UP`
+   (`CronRefines.canRun` → `health.getStatus() == UP`). A cron that fires while
+   the instance is below `UP` is deferred (reset to `UNSCHEDULED`) and retried
+   later, so an instance left `DOWN` or `MAINT` silently runs none of its
+   scheduled jobs — which can look like a broken or hung application rather than
+   a health gate. Bring the instance `UP` (see
+   [Health gating](#health-store--forward-gating)), or set `clusterable: false`
+   on a cron that must run regardless of status. Note this is a foam-saf
+   behaviour: without foam-saf, `Cron.canRun` is unconditional.
 
 ---
 

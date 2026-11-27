@@ -141,7 +141,11 @@ Health status is <b>UP</b> or <b>MAINT</b>.</p>
     hostDAO (hosts.jrl) to get the address. It uses the SAFConfig port,
     and falls back to the SocketServer port only when that port is 0.
     The fallback uses the sender's own SocketServer port, so it only
-    works when both instances use the same -W.</li>
+    works when both instances use the same -W. On a hostDAO miss the id
+    is used verbatim as the hostname with no warning, so an absent or
+    unloaded hosts.jrl can silently send to the wrong host (for example
+    a 127.0.0.1 self-loop, where the sender's own safBroadcastReceiverDAO
+    applies the entries it just emitted and the peer receives nothing).</li>
   <li>Login. SAFSupport.getBroadcastClientDAO wraps the socket box in a
     SessionClientBox using the receiver SAFConfig's sessionId, or the
     session of the sending context when there is one. That session must
