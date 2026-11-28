@@ -233,12 +233,13 @@ touch /tmp/<hostname>/<appname>/DOWN    # -> status DOWN
 ## Health heartbeat and delivery modes
 
 The store/forward gates above read Health status out of **healthDAO**. That DAO
-is populated by a **heartbeat**: each instance's `HealthHeartbeatService`
-periodically sends its own Health, and also listens and writes what it receives
-into `healthDAO`. Until an instance has received a peer's heartbeat, that peer
-is absent from its `healthDAO` and SAF will **not forward** to it (no "UP"
-signal) — so a broken heartbeat looks exactly like a cluster that never
-forwards.
+is populated by a **heartbeat**: in the multicast modes each instance's
+`HealthHeartbeatService` periodically sends its own Health, and also listens and
+writes what it receives into `healthDAO`. Until an instance has received a peer's
+heartbeat, that peer is absent from its `healthDAO` and SAF will **not forward**
+to it (no "UP" signal) — so a broken heartbeat looks exactly like a cluster that
+never forwards. (`DIRECT` populates `healthDAO` a different way — by HTTPS poll,
+not by UDP; see [DIRECT](#direct-no-multicast) below.)
 
 On a graceful JVM shutdown `HealthHeartbeatService.stop()` (a `COREService`
 stop, called by `CSpecFactory.shutdown()`) sends one final `DOWN` heartbeat, so
@@ -253,7 +254,7 @@ normal case.
 |------|----------|
 | `BROADCAST` *(default)* | Multicast to the group (`230.22.41.0:52241`) on the OS default interface. |
 | `LOOPBACK` | Multicast pinned to the loopback interface, for several instances on one host (local testing). |
-| `DIRECT` | Unicast to each peer from `getPeers()`, for environments such as AWS that do not support multicast. In foam-saf, `getPeers` is refined to return the enabled `SAFConfig`s other than this instance (`HealthHeartbeatServiceRefines`), so DIRECT reaches exactly the SAF peers. |
+| `DIRECT` | **No UDP heartbeat.** The service self-disables; `HealthHeartbeatMonitor` instead polls each peer's `/service/health` over HTTPS. For environments such as AWS that do not support multicast. See [DIRECT](#direct-no-multicast) below. |
 
 ### LOOPBACK for local single-box testing
 
@@ -280,6 +281,36 @@ No app restart is needed after adding the route — the next heartbeat (~3s)
 flows. Without a VPN the route is not needed. Do **not** use `LOOPBACK` in a
 multi-host deployment; there the heartbeat must use a routable interface
 (`BROADCAST`) or `DIRECT`.
+
+### DIRECT (no multicast)
+
+`DIRECT` is for networks with no multicast (AWS). It does **not** send a UDP
+heartbeat at all. UDP unicast cannot populate `healthDAO` in SAF's topology: a
+unicast sender never receives its own packet (multicast loops back, unicast does
+not), so an instance would never record its own health, and a monitor whose only
+`SAFConfig` is itself has no peer to send to. So under `DIRECT`:
+
+* **`HealthHeartbeatService.start()` returns early** — no sender, no listener.
+  It still holds the config (`mode`, `getPeers`, ports). It logs `UDP heartbeat
+  disabled for DIRECT` at startup, and `reload()` re-enables the UDP paths if the
+  mode is later changed away from `DIRECT`.
+* **`HealthHeartbeatMonitor` polls instead.** Every `timerInterval` it issues an
+  HTTPS `GET <peer>/service/health?format=json` for each of this instance's
+  `getPeers()`, parses the returned `Health`, and writes it to `healthDAO` (with
+  `heartbeatTime` = receive time, `propogationTime` = round-trip). It also
+  refreshes this instance's own Health row each tick, since there is no
+  self-loopback to do it. A peer whose poll fails (non-200, timeout, TLS error)
+  is marked down with the monitor's `unhealthyStatus`.
+* **The `/service/health` endpoint** is served by every instance
+  (`authenticate:false`; HTTP 200 if `UP` else 503; `?format=json` returns the
+  served instance's full `Health`). The poll reuses the shared
+  `sslContextFactory` — the same self-signed cert SAF's secure sockets trust —
+  and, like those sockets, trusts the cert without HTTP hostname verification.
+
+Because a client makes a real HTTPS request to each peer, a peer's address
+(DNS/IP, from `hosts.jrl` or DNS) must be reachable instance-to-instance and
+match the cert — in AWS, the **internal (behind-LB) address**, not the public
+load-balancer endpoint.
 
 ---
 
@@ -428,7 +459,12 @@ SAF failures are usually quiet: data just doesn't arrive. Work down this list.
    - the heartbeat self-disables unless `-Dhostname` is a real name (not
      `localhost`) — confirm the instance's hostname;
    - on macOS with a VPN, loopback multicast needs the host route — see
-     [Health heartbeat and delivery modes](#health-heartbeat-and-delivery-modes).
+     [Health heartbeat and delivery modes](#health-heartbeat-and-delivery-modes);
+   - under **`DIRECT`** there is no UDP heartbeat — `healthDAO` is filled by
+     `HealthHeartbeatMonitor`'s HTTPS poll of each peer's `/service/health`. If a
+     peer never appears, the poll is failing: look for `poll,<host>,failed,...`
+     from the monitor (TLS, DNS, or reachability), and check the peer's address is
+     the internal, cert-matching one. See [DIRECT](#direct-no-multicast).
 
 2. **An instance never stores/forwards its own updates.** Its *own* Health must
    be `UP` or `DRAIN`; at `DOWN` it stores nothing. Something has to set it `UP`
