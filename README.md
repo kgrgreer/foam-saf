@@ -91,6 +91,41 @@ SAF is added to a build with one of two deployment journal sets:
 > for example `localLogMessageDAO`, which deadlocks at boot if its own log
 > writes go through SAF.
 
+### Forwarding only some objects — `safBroadcastPredicate`
+
+By default a SAF-enabled DAO forwards **every** object it stores. To forward
+only a subset, set an **FScript predicate** on the `EasyDAO` with
+`.setSafBroadcastPredicate("...")`. Only objects the predicate matches are
+store-and-forwarded; the rest are stored locally and stay there. Leaving it
+empty (the default) forwards everything, so existing SAF DAOs are unchanged.
+
+```java
+.setSaf(true)
+.setSafBroadcastPredicate(
+  "severity == foam.log.LogLevel.WARN || severity == foam.log.LogLevel.ERROR")
+```
+
+This is the real first use: a log DAO whose rows are `LogMessage`s, where only
+`WARN` and `ERROR` messages are forwarded to the monitor and `DEBUG`/`INFO` stay
+local.
+
+**The predicate is evaluated against one object at a time.** This is the
+single-object form of FScript, **not** the rule form — there is no `o`/`n`
+(OLD/NEW) binding on a RulerData wrapper here. `SAFBroadcastDAO` parses the
+string **once**, against the forwarded object's own class, and caches it:
+
+* a **bare property** such as `severity` binds to the object itself — it becomes
+  that object's `SEVERITY` PropertyInfo, read via `getSeverity()` when the
+  predicate is evaluated;
+* a **dotted path** such as `foam.log.LogLevel.WARN` is an enum constant.
+
+Both `put` and `remove` are gated by the same predicate, so an object that was
+never forwarded on put does not send a stray remove to the monitor.
+
+**Parse failure fails open.** A predicate that does not parse is treated as
+`true` (forwards everything) and logs a warning, so a config typo never silently
+drops data.
+
 ---
 
 ## Configuration files
