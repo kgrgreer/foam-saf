@@ -306,6 +306,9 @@ not), so an instance would never record its own health, and a monitor whose only
   served instance's full `Health`). The poll reuses the shared
   `sslContextFactory` — the same self-signed cert SAF's secure sockets trust —
   and, like those sockets, trusts the cert without HTTP hostname verification.
+  The JSON carries a **`heartbeatMode`** field (the delivery mode in effect —
+  `DIRECT` here), distinct from `mode` (the application runtime Mode), so an
+  operator can confirm the mode without reading the logs or `services.0`.
 
 Because a client makes a real HTTPS request to each peer, a peer's address
 (DNS/IP, from `hosts.jrl` or DNS) must be reachable instance-to-instance and
