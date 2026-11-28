@@ -9,6 +9,17 @@ foam.CLASS({
   name: 'EasyDAORefines',
   refines: 'foam.dao.EasyDAO',
 
+  properties: [
+    {
+      // FScript predicate; when set, only objects it matches are store-and-
+      // forwarded. Empty (the default) forwards everything, preserving prior
+      // behaviour. Consumed by SAFBroadcastDAO, installed in getClusterDelegate.
+      class: 'String',
+      name: 'safBroadcastPredicate',
+      documentation: 'FScript predicate; an object is store-and-forwarded only when it matches. Empty = forward all.'
+    }
+  ],
+
   methods: [
     {
       name: 'getClusterDelegate',
@@ -19,6 +30,7 @@ foam.CLASS({
              getSaf() ) {
           return new foam.core.saf.SAFBroadcastDAO.Builder(getX())
             .setCSpec(getCSpec())
+            .setSafBroadcastPredicate(getSafBroadcastPredicate())
             .setDelegate(delegate)
             .build();
         }
