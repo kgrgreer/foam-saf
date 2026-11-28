@@ -17,7 +17,7 @@ foam.CLASS({
     'foam.core.app.HealthStatus',
     'foam.core.app.HealthSupport',
     'foam.core.logger.Logger',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.dao.AbstractSink',
     'foam.dao.ArraySink',
     'foam.dao.DAO',
@@ -128,7 +128,7 @@ If -1, no using timeWindow`,
       javaThrows: [],
       documentation: 'processor that polls entries from queue and try delegate.put when there are available entries',
       javaCode: `
-        Loggers.logger(x).info("SAFManager,forwarder,init");
+        StdoutLogger.instance().info("SAFManager,forwarder,init");
         PriorityQueue<SAFEntry> queue = (PriorityQueue) getProrityQueue();
         SAFSupport support = (SAFSupport) x.get("safSupport");
         final HealthSupport healthSupport = (HealthSupport) x.get("healthSupport");
@@ -145,35 +145,35 @@ If -1, no using timeWindow`,
           @Override
           public void execute(X x) {
             while ( true ) {
-              if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,queue",queue.size());
               if ( queue.size() > 0 ) {
-                if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
+                if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,queue",queue.size());
                 if ( queue.peek().getScheduledTime() <= System.currentTimeMillis() ) {
+                  if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,scheduled",queue.peek().getScheduledTime(), "current", System.currentTimeMillis());
                   SAFEntry e = queue.peek();
                   final SAF saf = (SAF) getSafs().get(e.getSaf());
                   if ( saf == null ) {
                     // SAF removed, discard it's data.
                     try {
-                       if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,discard", saf.getId(), e.getObject());
+                       if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,discard", saf.getId(), e.getObject());
                       queue.remove(e);
                       SAF old = e.findSaf(x);
                       old.discardForward(e);
                       continue;
                     } catch ( Throwable t ) {
-                      Loggers.logger(x).warning("SAFManager,forwarder,failed to discard", e.getSaf(), e);
+                      StdoutLogger.instance().warning("SAFManager,forwarder,failed to discard", e.getSaf(), e);
                       throw new SAFException("Failed to discard");
                     }
                   }
 
                   Health health = healthSupport.getHealth(x, saf.getId());
-                  if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,health", saf.getId(), health.toSummary());
+                  if ( support.getVerbose() && health != null ) StdoutLogger.instance().debug("SAFManager,forwarder,health", saf.getId(), health.toSummary());
                   if ( health != null &&
                        ( health.getStatus() == HealthStatus.UP ||
                          health.getStatus() == HealthStatus.MAINT ) ) {
                     assemblyLine.enqueue(new AbstractAssembly() {
                       public void executeJob() {
                         try {
-                          if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,submit", saf.getId(), e.getObject());
+                          if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,submit", saf.getId(), e.getObject());
                           queue.remove(e);
                           saf.submit(x, e);
                           try {
@@ -183,17 +183,17 @@ If -1, no using timeWindow`,
                           }
                         }
                         catch ( SAFException safe ) {
-                          Loggers.logger(x).error("SAFManager,forwarder,setReady,false", saf.getId(), safe.getCause());
+                          StdoutLogger.instance().error("SAFManager,forwarder,setReady,false", saf.getId(), safe.getCause());
                           saf.setReady(false);
                         }
                         catch ( Throwable t ) {
-                          Loggers.logger(x).warning("SAFManager,forwarder,setReady,false", saf.getId(), t.getMessage());
-                          //Loggers.logger(x).error("SAFManager,forwarder,setReady,false", saf.getId(), t);
+                          StdoutLogger.instance().warning("SAFManager,forwarder,setReady,false", saf.getId(), t.getMessage());
+                          //StdoutLogger.instance().error("SAFManager,forwarder,setReady,false", saf.getId(), t);
                           try {
-                            if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,failFoward", saf.getId());
+                            if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,failFoward", saf.getId());
                             saf.failForward(e, t);
                           } catch ( Throwable et ) {
-                            Loggers.logger(x).error("SAFManager,forwarder,failFoward", saf.getId(), et);
+                            StdoutLogger.instance().error("SAFManager,forwarder,failFoward", saf.getId(), et);
                             saf.setReady(false);
                           }
                         }
@@ -206,10 +206,10 @@ If -1, no using timeWindow`,
                   if ( waitTime > 0 ) {
                     lock_.lock();
                     try {
-                      if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await",waitTime);
+                      if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,await",waitTime);
                       notAvailable_.await(waitTime, TimeUnit.MILLISECONDS);
                     } catch ( InterruptedException e ) {
-                      Loggers.logger(x).info("SAFManager,forwarder,interrupted",waitTime);
+                      StdoutLogger.instance().info("SAFManager,forwarder,interrupted",waitTime);
                     } finally {
                       lock_.unlock();
                     }
@@ -217,10 +217,10 @@ If -1, no using timeWindow`,
                 } else {
                   lock_.lock();
                   try {
-                    if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await,2000");
+                    if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,await,2000");
                     notAvailable_.await(2000, TimeUnit.MILLISECONDS);
                   } catch ( InterruptedException e ) {
-                    Loggers.logger(x).info("SAFManager,forwarder,interrupted");
+                    StdoutLogger.instance().info("SAFManager,forwarder,interrupted");
                   } finally {
                     lock_.unlock();
                   }
@@ -230,20 +230,20 @@ If -1, no using timeWindow`,
                   lock_.lock();
                   try {
                     // disable until SAFs available
-                    if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await");
+                    if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,await");
                     notAvailable_.await();
                   } catch ( InterruptedException e ) {
-                    Loggers.logger(x).info("SAFManager,forwarder,interrupted");
+                    StdoutLogger.instance().info("SAFManager,forwarder,interrupted");
                   } finally {
                     lock_.unlock();
                   }
                 } else {
                   lock_.lock();
                   try {
-                    if ( support.getVerbose() ) Loggers.logger(x).debug("SAFManager,forwarder,await,2000");
+                    if ( support.getVerbose() ) StdoutLogger.instance().debug("SAFManager,forwarder,await,2000");
                     notAvailable_.await(2000, TimeUnit.MILLISECONDS);
                   } catch ( InterruptedException e ) {
-                    Loggers.logger(x).info("SAFManager,forwarder,interrupted");
+                    StdoutLogger.instance().info("SAFManager,forwarder,interrupted");
                   } finally {
                     lock_.unlock();
                   }
@@ -274,7 +274,7 @@ If -1, no using timeWindow`,
       name: 'reload',
       javaCode: `
         X x = getX();
-        Logger logger = Loggers.logger(x, this);
+        Logger logger = StdoutLogger.instance();
         List<String> ids = getBroadcastIds(x);
         Map<String, SAF> current = getSafs();
         for ( String id : current.keySet() ) {

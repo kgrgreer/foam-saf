@@ -12,6 +12,7 @@ foam.POM({
   files: [
     { name: "DUGSFRuleAction",                      flags: "js|java" },
     { name: "DUGSFRule",                            flags: "js|java" },
+    { name: "HealthHeartbeatServiceRefines",       flags: "js|java" },
     { name: "HealthStatusWatcher",                  flags: "js|java" },
     { name: "SAF",                                  flags: "js|java" },
     { name: "SAFBroadcastDAO",                      flags: "js|java" },

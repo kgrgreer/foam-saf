@@ -19,7 +19,7 @@ foam.CLASS({
     'foam.box.SessionClientBox',
     'foam.box.socket.SocketClientBox',
     'foam.box.socket.SocketServer',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.core.pm.PM',
     'foam.core.session.Session',
     'foam.dao.DAO',
@@ -35,8 +35,7 @@ foam.CLASS({
   properties: [
     {
       name: 'verbose',
-      class: 'Boolean',
-      value: true
+      class: 'Boolean'
     },
     {
       name: 'threadPoolName',
@@ -70,7 +69,7 @@ foam.CLASS({
             EQ(SAFConfig.NAME, id)
           ));
       if ( config == null ) {
-        Loggers.logger(x, this).warning("SAFConfig not found", id);
+        StdoutLogger.instance().warning("SAFConfig not found", id);
       }
       return config;
       `
@@ -118,12 +117,11 @@ foam.CLASS({
           port = foam.net.Port.get(x, "SocketServer");
         }
 
-        SocketClientBox clientBox = new SocketClientBox();
-        clientBox.set(getX());
+        SocketClientBox clientBox = new SocketClientBox(getX());
         clientBox.setHost(address);
         clientBox.setPort(port);
         clientBox.setServiceName(serviceName);
-        // getLogger().debug("getSocketClientBox", serviceName, clientBox);
+        StdoutLogger.instance().debug("getSocketClientBox", serviceName, clientBox);
         return clientBox;
       } finally {
         pm.log(x);

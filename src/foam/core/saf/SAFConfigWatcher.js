@@ -25,7 +25,7 @@ p({
 
   javaImports: [
     'foam.core.logger.Logger',
-    'foam.core.logger.Loggers',
+    'foam.core.logger.StdoutLogger',
     'foam.dao.DAO',
     'foam.lang.X',
     'foam.util.SafetyUtil',
@@ -64,7 +64,7 @@ p({
     {
       name: 'handleRequest',
       javaCode: `
-        Logger logger = Loggers.logger(x, this);
+        Logger logger = StdoutLogger.instance();
         boolean enable = ENABLE.equals(request);
 
         try {

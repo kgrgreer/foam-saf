@@ -1,4 +1,16 @@
 p({
+  "class": "foam.core.boot.CSpec",
+  "name": "healthHeartbeatService",
+  "enabled": true
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "healthHeartbeatMonitor",
+  "enabled": true
+})
+
+p({
   class: "foam.core.boot.CSpec",
   name: "safBroadcastReceiverTestDAO",
   authenticate: false,
